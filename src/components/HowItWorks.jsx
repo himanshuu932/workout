@@ -105,7 +105,7 @@ const HowItWorks = () => {
       <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-slate-900 to-transparent pointer-events-none z-10" />
       <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-slate-900 to-transparent pointer-events-none z-10" />
       
-      <section className="py-32 text-white relative">
+      <section className="py-12 text-white relative">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {particles.map(p => (
             <motion.div

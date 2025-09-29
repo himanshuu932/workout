@@ -16,26 +16,17 @@ code {
 @tailwind components;
 @tailwind utilities;
 
-/*
-  Replace the old @keyframes and class with this new one
-  to better handle the large 150px icon.
-*/
-/*
-  Replace the old @keyframes and class with this new one
-  to better handle the large 150px icon.
-*/
+
 @keyframes semicircle-path-large {
   0% {
     transform: translateX(150px);
     opacity: 0;
   }
   30% {
-    /* MODIFIED: Changed -80px to -50px to lower the animation path */
     transform: translateX(0) translateY(-30px);
     opacity: 1;
   }
   70% {
-    /* MODIFIED: Changed -80px to -50px to lower the animation path */
     transform: translateX(0) translateY(-30px);
     opacity: 1;
   }

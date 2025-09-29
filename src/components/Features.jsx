@@ -61,7 +61,7 @@ const FeatureCard = ({ icon, title, description, index }) => {
           }}
         />
 
-        <div className="relative z-10 flex flex-col h-full">
+      <div className="relative z-10 flex flex-col items-center text-center h-full">
             <div className="bg-slate-900/50 text-[#a4f16c] w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#a4f16c] group-hover:text-slate-900 transition-colors duration-300">
                 {icon}
             </div>
@@ -74,7 +74,7 @@ const FeatureCard = ({ icon, title, description, index }) => {
 
 const Features = () => {
   return (
-    <section id="features" className=" bg-slate-900 text-white relative overflow-hidden">
+    <section id="features" className="py-10 bg-slate-900 text-white relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-slate-900 to-transparent pointer-events-none z-10" />
       <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-slate-900 to-transparent pointer-events-none z-10" />
       
