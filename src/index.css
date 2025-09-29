@@ -31,12 +31,12 @@ code {
   }
   30% {
     /* MODIFIED: Changed -80px to -50px to lower the animation path */
-    transform: translateX(0) translateY(-90px);
+    transform: translateX(0) translateY(-30px);
     opacity: 1;
   }
   70% {
     /* MODIFIED: Changed -80px to -50px to lower the animation path */
-    transform: translateX(0) translateY(-90px);
+    transform: translateX(0) translateY(-30px);
     opacity: 1;
   }
   100% {

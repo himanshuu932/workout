@@ -94,7 +94,7 @@ const Hero = () => {
         </header>
 
         <main className="max-w-full lg:max-w-1/2 text-center lg:text-left items-center lg:items-start">
-          <div key={currentToolIndex} className="h-48 mb-1 flex justify-center lg:justify-start">
+          <div key={currentToolIndex} className="h-32 flex justify-center lg:justify-start">
             <div className='animate-semicircle-path-large'>
               {workoutTools[currentToolIndex].icon}
             </div>
