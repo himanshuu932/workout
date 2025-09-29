@@ -27,15 +27,15 @@ const CountUp = ({ end, duration = 2000, decimals = 0 }) => {
 
 const workoutTools = [
   {
-    icon: <FaDumbbell size={150} className="text-[#a4f16c]" />,
+    icon: <FaDumbbell size={120} className="text-[#a4f16c]" />,
     text: 'Customize your workout plans with a vast library of exercises.'
   },
   {
-    icon: <FaWeightHanging size={150} className="text-[#a4f16c]" />,
+    icon: <FaWeightHanging size={120} className="text-[#a4f16c]" />,
     text: 'Track your strength progress, set new records, and reach your goals.'
   },
   {
-    icon: <FaFire size={150} className="text-[#a4f16c]" />,
+    icon: <FaFire size={120} className="text-[#a4f16c]" />,
     text: 'Monitor calories burned and stay on top of your nutrition targets.'
   }
 ];
@@ -79,7 +79,7 @@ const Hero = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/70 to-transparent"></div>
       <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-slate-900 to-transparent"></div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col justify-between h-[90vh]">
+      <div className="relative mb-20 z-10 w-full max-w-7xl mx-auto flex flex-col justify-between h-[90vh]">
         <header className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <SiFireship size={30} className="text-[#a4f16c]" />
@@ -94,7 +94,7 @@ const Hero = () => {
         </header>
 
         <main className="max-w-full lg:max-w-1/2 text-center lg:text-left items-center lg:items-start">
-          <div key={currentToolIndex} className="h-48 mb-4 flex justify-center lg:justify-start">
+          <div key={currentToolIndex} className="h-48 mb-1 flex justify-center lg:justify-start">
             <div className='animate-semicircle-path-large'>
               {workoutTools[currentToolIndex].icon}
             </div>
@@ -115,7 +115,7 @@ const Hero = () => {
             </button>
           </div>
 
-          <div className="w-full flex justify-center lg:justify-start gap-8 md:gap-16 mt-12">
+          <div className="w-full flex justify-center lg:justify-start gap-8 md:gap-16 mt-5">
             <div className="text-center">
               <p className="text-2xl md:text-3xl font-bold"><CountUp end={1} />M+</p>
               <p className="text-sm text-slate-400">Happy Users</p>
