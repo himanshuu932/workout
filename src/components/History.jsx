@@ -52,7 +52,7 @@ const History = () => {
                     onClick={() => navigate('/dashboard')} 
                     className="font-semibold px-6 py-2 rounded-lg border-2 border-[#a4f16c] text-[#a4f16c] hover:bg-[#a4f16c] hover:text-slate-900 transition-all shadow-md"
                 >
-                    Back to Dashboard
+                    Back
                 </button>
             </header>
 

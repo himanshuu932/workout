@@ -47,7 +47,7 @@ const PendingWorkoutPrompt = ({ pendingWorkout, onResume, onDiscard }) => {
         <div className="md:pl-2 order-1 md:flex md:flex-col md:justify-between">
           {/* Top part of the left column */}
           <div>
-            <h3 className="text-xl font-bold text-white uppercase tracking-wider">
+            <h3 className="text-xl font-bold text-[#a4f16c] uppercase tracking-wider">
               Unfinished Workout
             </h3>
             <p className="text-slate-300 mt-2">
@@ -67,7 +67,7 @@ const PendingWorkoutPrompt = ({ pendingWorkout, onResume, onDiscard }) => {
               onClick={onResume}
               className="flex-1 md:flex-none font-bold text-slate-900 bg-[#a4f16c] hover:bg-[#8cd953] py-2 px-5 rounded-lg transition-colors"
             >
-              Resume Workout
+              Resume
             </button>
           </div>
         </div>
@@ -76,7 +76,7 @@ const PendingWorkoutPrompt = ({ pendingWorkout, onResume, onDiscard }) => {
         <div className="w-full md:w-auto flex flex-col items-start md:items-end gap-2 order-2">
           <div className="text-left md:text-right">
               <p className="text-slate-300">Last Activity:</p>
-              <p className="font-bold text-white text-2xl">
+              <p className="font-bold text-[#a4f16c] text-2xl">
                 {currentExercise.name}
               </p>
               <p className="text-slate-400 -mt-1">
@@ -112,7 +112,7 @@ const PendingWorkoutPrompt = ({ pendingWorkout, onResume, onDiscard }) => {
             onClick={onResume}
             className="flex-1 md:flex-none font-bold text-slate-900 bg-[#a4f16c] hover:bg-[#8cd953] py-2 px-5 rounded-lg transition-colors"
           >
-            Resume Workout
+            Resume
           </button>
         </div>
 

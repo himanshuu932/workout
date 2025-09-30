@@ -1,8 +1,9 @@
 // src/components/dashboard/WorkoutPlan.jsx
 import React from 'react';
-import { FaPlus, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaPencilAlt } from 'react-icons/fa'; // Import the edit icon
 
-const WorkoutPlan = ({ plan, onStart, onClear, onAddExercise }) => {
+// Add 'onEditExercise' to the component's props
+const WorkoutPlan = ({ plan, onStart, onClear, onAddExercise, onDeleteExercise, onEditExercise }) => {
   return (
     <div className="lg:col-span-2 bg-slate-800/50 border border-slate-700 rounded-2xl p-6 flex flex-col">
       <div className="flex justify-between items-center mb-4">
@@ -18,16 +19,32 @@ const WorkoutPlan = ({ plan, onStart, onClear, onAddExercise }) => {
       </div>
       <div className="space-y-3 overflow-y-auto pr-2 flex-grow">
         {plan?.exercises.map(ex => (
-          <div key={ex.id} className="flex items-center gap-4 bg-slate-700/50 p-3 rounded-lg">
-            {/* UPDATED: Use the new ex.imageUrl property */}
+          <div key={ex.id} className="group flex items-center gap-4 bg-slate-700/50 p-3 rounded-lg">
             <img 
               src={ex.imageUrl} 
               alt={ex.name} 
               className="w-12 h-12 rounded-md object-cover" 
             />
-            <div>
+            <div className="flex-grow">
               <p className="font-bold">{ex.name}</p>
               <p className="text-sm text-slate-400">{ex.sets}x{ex.reps} reps, {ex.rest}s rest</p>
+            </div>
+            {/* Wrapper for the hover buttons */}
+            <div className="ml-auto flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button 
+                onClick={() => onEditExercise(ex)} // Pass the whole exercise object
+                title="Edit Exercise" 
+                className="text-slate-400 hover:text-[#a4f16c]"
+              >
+                <FaPencilAlt />
+              </button>
+              <button 
+                onClick={() => onDeleteExercise(ex.id)}
+                title="Remove Exercise" 
+                className="text-slate-400 hover:text-red-500"
+              >
+                <FaTrash />
+              </button>
             </div>
           </div>
         ))}

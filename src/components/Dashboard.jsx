@@ -11,6 +11,7 @@ import ExerciseLibrary from './dashboard/ExerciseLibrary';
 import ActiveWorkout from './dashboard/ActiveWorkout';
 import AddExerciseModal from './dashboard/AddExerciseModal';
 import PendingWorkoutPrompt from './dashboard/PendingWorkoutPrompt'; // Import the new component
+import EditExerciseModal from './dashboard/EditExerciseModal'; // Import the new modal
 
 import pushUp from '../assets/push.png';
 import squats from '../assets/squats.png';
@@ -65,7 +66,8 @@ const Dashboard = () => {
 
   // NEW: State for pending workout
   const [pendingWorkout, setPendingWorkout] = useState(null);
-
+   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [exerciseToEdit, setExerciseToEdit] = useState(null);
   useEffect(() => {
     if (currentUser) {
       const fetchUserData = async () => {
@@ -151,9 +153,22 @@ const Dashboard = () => {
     setActiveWorkout(null);
   };
 
-// ... (keep all other code in Dashboard.jsx the same)
-
-  // UPDATED: Now saves progress to a 'pendingWorkout' state instead of history.
+   const handleDeleteExercise = async (exerciseId) => {
+    // Add this confirmation dialog
+    if (window.confirm("Are you sure you want to remove this exercise?")) {
+      if (!workoutPlan) return;
+      
+      // Filter out the exercise with the matching ID
+      const updatedExercises = workoutPlan.exercises.filter(ex => ex.id !== exerciseId);
+      const updatedPlan = { ...workoutPlan, exercises: updatedExercises };
+      
+      // Update the database
+      await updateDoc(doc(db, 'users', currentUser.uid), { workoutPlan: updatedPlan });
+      
+      // Update the local state to re-render the component
+      setWorkoutPlan(updatedPlan);
+    }
+  };
   const handleEndPrematurely = async () => {
     if (!activeWorkout) return;
     if (!window.confirm("Are you sure you want to end the workout early? Your progress will be paused.")) {
@@ -244,7 +259,29 @@ const Dashboard = () => {
       handleEndPrematurely();
     }
   };
-  
+  const handleOpenEditModal = (exercise) => {
+    setExerciseToEdit(exercise);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateExercise = async (updatedExercise) => {
+    if (!workoutPlan || !updatedExercise) return;
+
+    // Find and update the exercise in the plan
+    const updatedExercises = workoutPlan.exercises.map(ex => 
+      ex.id === updatedExercise.id ? updatedExercise : ex
+    );
+
+    const updatedPlan = { ...workoutPlan, exercises: updatedExercises };
+
+    // Save to Firestore and update local state
+    await updateDoc(doc(db, 'users', currentUser.uid), { workoutPlan: updatedPlan });
+    setWorkoutPlan(updatedPlan);
+
+    // Close the modal
+    setIsEditModalOpen(false);
+    setExerciseToEdit(null);
+  };
   // CRITICAL FIX: The handleTimerEnd function now wraps phase transitions in a 3-second setTimeout.
   useEffect(() => {
     if (!isWorkoutActive || !activeWorkout) return;
@@ -393,6 +430,8 @@ const Dashboard = () => {
             plan={enrichedWorkoutPlan} 
             onStart={startWorkout} 
             onClear={handleClearPlan} 
+            onDeleteExercise={handleDeleteExercise}
+            onEditExercise={handleOpenEditModal}
             onAddExercise={() => setIsModalOpen(true)}
           />
         </div>
@@ -425,6 +464,15 @@ const Dashboard = () => {
         onClose={() => setIsModalOpen(false)}
         onAdd={handleAddExercise}
         exercises={exerciseLibrary}
+      />
+      <EditExerciseModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+            setIsEditModalOpen(false);
+            setExerciseToEdit(null);
+        }}
+        onUpdate={handleUpdateExercise}
+        exercise={exerciseToEdit}
       />
     </div>
   );
