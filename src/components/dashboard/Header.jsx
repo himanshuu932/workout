@@ -51,8 +51,8 @@ const Header = ({ onClearHistory, onLogout }) => {
         </button>
       </div>
 
-      {/* Mobile Hamburger Button and Menu Container (relative to the header) */}
-      <div className="relative md:hidden z-20" ref={menuRef}>
+      {/* MODIFIED: Mobile Hamburger Button and Menu Container (Now hidden on LG screens and up) */}
+      <div className="relative lg:hidden z-20" ref={menuRef}> 
         <button 
           className="text-2xl" 
           onClick={toggleMenu}
@@ -61,7 +61,7 @@ const Header = ({ onClearHistory, onLogout }) => {
           {isMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
-        {/* MODIFIED: Mobile Dropdown Menu (similar style to Hero.jsx) */}
+        {/* MODIFIED: Mobile Dropdown Menu (Now hidden on LG screens and up) */}
         <div 
           className={`absolute right-0 top-full mt-2 w-48 bg-slate-800 rounded-lg shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${
             isMenuOpen ? 'max-h-60 opacity-100 p-2' : 'max-h-0 opacity-0 p-0'
@@ -97,8 +97,8 @@ const Header = ({ onClearHistory, onLogout }) => {
         </div>
       </div>
 
-      {/* Desktop Navigation (Remains Unchanged) */}
-      <nav className="hidden md:flex items-center gap-4">
+      {/* MODIFIED: Desktop Navigation (Now shown from LG screens and up) */}
+      <nav className="hidden lg:flex items-center gap-4">
         <button 
           onClick={() => handleNavigation('/')} 
           className="font-semibold px-4 py-2 hover:text-[#a4f16c] transition-colors"
