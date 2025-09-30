@@ -12,6 +12,7 @@ import ActiveWorkout from './dashboard/ActiveWorkout';
 import AddExerciseModal from './dashboard/AddExerciseModal';
 import PendingWorkoutPrompt from './dashboard/PendingWorkoutPrompt';
 import EditExerciseModal from './dashboard/EditExerciseModal';
+import DumbbellAnimation from './DumbbellAnimation';
 
 import pushUp from '../assets/push.png';
 import squats from '../assets/squats.png';
@@ -443,8 +444,13 @@ const Dashboard = () => {
   };
   
 
-  if (loading) { return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">Loading...</div>; }
-  
+   if (loading) {
+          return (
+              <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+               <DumbbellAnimation />
+              </div>
+          );
+      }
   return (
     <div className="min-h-screen bg-slate-900 text-white p-4 sm:p-8">
       <main className="max-w-7xl mx-auto">
