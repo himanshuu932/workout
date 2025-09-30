@@ -90,7 +90,6 @@ const Hero = () => {
             <h1 className="text-2xl font-bold">FITFLOW</h1>
           </div>
           <nav className="flex items-center gap-4">
-            {/* Conditional rendering for Log In/Log Out */}
             {currentUser ? (
               <button 
                 onClick={handleLogout}
@@ -123,17 +122,19 @@ const Hero = () => {
             {typedText}
             <span className="animate-pulse">|</span>
           </p>
-          <div className="flex flex-col sm:flex-row gap-4">
+
+          <div className="flex flex-col sm:flex-row gap-4 w-4/5 max-w-sm mx-auto sm:mx-0">
             <button 
               onClick={() => navigate('/signup')}
-              className="font-semibold text-slate-900 bg-[#a4f16c] hover:bg-[#8cd953] px-8 py-3 rounded-lg transition-colors"
+              className="font-semibold text-slate-900 bg-[#a4f16c] hover:bg-[#8cd953] px-8 py-3 rounded-lg transition-colors w-full"
             >
               Get Started
             </button>
-            <button className="font-semibold text-white bg-transparent border-2 border-slate-600 hover:bg-slate-600 px-8 py-3 rounded-lg transition-colors">
+            <button className="font-semibold text-white bg-transparent border-2 border-slate-600 hover:bg-slate-600 px-8 py-3 rounded-lg transition-colors w-full">
               Contact Us
             </button>
           </div>
+
 
           <div className="w-full flex justify-center lg:justify-start gap-8 md:gap-16 mt-5">
             <div className="text-center">

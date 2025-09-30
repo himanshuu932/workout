@@ -55,7 +55,6 @@ const Header = ({ onClearHistory, onLogout }) => {
         </button>
       </nav>
 
-      Mobile Navigation/Overlay (Conditionally rendered)
       <nav 
         className={`fixed top-0 left-0 h-full w-full bg-slate-900/95 backdrop-blur-sm z-10 transform transition-transform duration-300 ease-in-out ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
