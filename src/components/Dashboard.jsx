@@ -419,9 +419,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-slate-900 text-white p-4 sm:p-8">
       <main className="max-w-7xl mx-auto">
         <Header onLogout={handleLogout} onClearHistory={handleClearHistory} />
-        
-        {/* NEW: Render the prompt if a pending workout exists and a workout is NOT active */}
-     
+      
 
         <KpiCards kpis={kpis} />
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-8">
@@ -474,6 +472,7 @@ const Dashboard = () => {
         onUpdate={handleUpdateExercise}
         exercise={exerciseToEdit}
       />
+      
     </div>
   );
 };
