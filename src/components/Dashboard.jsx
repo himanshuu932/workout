@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { signOut } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -11,6 +10,7 @@ import WorkoutPlan from './dashboard/WorkoutPlan';
 import ExerciseLibrary from './dashboard/ExerciseLibrary';
 import ActiveWorkout from './dashboard/ActiveWorkout';
 import AddExerciseModal from './dashboard/AddExerciseModal';
+import PendingWorkoutPrompt from './dashboard/PendingWorkoutPrompt'; // Import the new component
 
 import pushUp from '../assets/push.png';
 import squats from '../assets/squats.png';
@@ -63,6 +63,9 @@ const Dashboard = () => {
   const [timer, setTimer] = useState(0);
   const [workoutStartTime, setWorkoutStartTime] = useState(null);
 
+  // NEW: State for pending workout
+  const [pendingWorkout, setPendingWorkout] = useState(null);
+
   useEffect(() => {
     if (currentUser) {
       const fetchUserData = async () => {
@@ -73,6 +76,8 @@ const Dashboard = () => {
           const data = docSnap.data();
           setWorkoutPlan(data.workoutPlan || { name: 'My First Workout', exercises: [] });
           setHistory(data.history || []);
+          // NEW: Load pending workout from database
+          setPendingWorkout(data.pendingWorkout || null);
         } else {
           setWorkoutPlan({ name: 'My First Workout', exercises: [] });
           setHistory([]);
@@ -116,7 +121,8 @@ const Dashboard = () => {
   
 // --- Handlers for Workout Flow ---
 
-  const saveWorkout = async (workoutToSave, isPartial) => {
+  // UPDATED: No longer takes 'isPartial'. A saved workout is always a complete one.
+  const saveWorkout = async (workoutToSave) => {
     const durationInSeconds = Math.round((Date.now() - workoutStartTime) / 1000);
     const workoutName = `Workout - ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
     
@@ -132,40 +138,88 @@ const Dashboard = () => {
       duration: durationInSeconds, 
       caloriesBurned, 
       exercises: workoutToSave.exercises,
-      isPartial 
+      isPartial: false // A saved workout is never partial in this new logic
     };
     
     const updatedHistory = [completedWorkout, ...history];
-    await updateDoc(doc(db, 'users', currentUser.uid), { history: updatedHistory });
+    // Also ensure the pending workout is cleared from DB upon successful completion
+    await updateDoc(doc(db, 'users', currentUser.uid), { history: updatedHistory, pendingWorkout: null });
     setHistory(updatedHistory);
+    setPendingWorkout(null);
 
     setIsWorkoutActive(false);
     setActiveWorkout(null);
   };
 
-  const handleEndPrematurely = () => {
+// ... (keep all other code in Dashboard.jsx the same)
+
+  // UPDATED: Now saves progress to a 'pendingWorkout' state instead of history.
+  const handleEndPrematurely = async () => {
     if (!activeWorkout) return;
-    if (!window.confirm("Are you sure you want to end the workout early? Your progress so far will be saved.")) {
+    if (!window.confirm("Are you sure you want to end the workout early? Your progress will be paused.")) {
         return;
     }
-    const exercisesCompleted = activeWorkout.exercises.slice(0, currentExerciseIndex);
+
+    // NEW: Calculate calories burned so far before pausing
+    let caloriesBurnedSoFar = 0;
+    const completedExercises = activeWorkout.exercises.slice(0, currentExerciseIndex);
+    completedExercises.forEach(ex => {
+        // Ensure caloriesPerSet is a number to avoid NaN issues
+        caloriesBurnedSoFar += (ex.sets || 0) * (ex.caloriesPerSet || 0);
+    });
+
     const currentExercise = activeWorkout.exercises[currentExerciseIndex];
-
-    // Recalculate completed sets for the current exercise
-    let completedSets = 0;
-    if (workoutPhase === 'REST') {
-        completedSets = currentSet; // REST means the work for this set is done
-    } else if (currentSet > 1) {
-        completedSets = currentSet - 1; // WORK/PREP means the current set isn't done
+    if (currentExercise && currentSet > 1) {
+        // Add calories for completed sets of the current exercise
+        caloriesBurnedSoFar += (currentSet - 1) * (currentExercise.caloriesPerSet || 0);
     }
+    
+    // UPDATED: The new object now includes pauseTime and caloriesBurnedSoFar
+    const newPendingWorkout = {
+      originalPlan: activeWorkout,
+      currentExerciseIndex: currentExerciseIndex,
+      currentSet: currentSet,
+      workoutStartTime: workoutStartTime,
+      pauseTime: Date.now(), // NEW: Record the exact time of pausing
+      caloriesBurnedSoFar: Math.round(caloriesBurnedSoFar) // NEW: Record calories
+    };
 
-    if (completedSets > 0) {
-      exercisesCompleted.push({ ...currentExercise, sets: completedSets });
-    }
+    await updateDoc(doc(db, 'users', currentUser.uid), { pendingWorkout: newPendingWorkout });
+    setPendingWorkout(newPendingWorkout);
 
-    const partialWorkout = { ...activeWorkout, exercises: exercisesCompleted };
-    saveWorkout(partialWorkout, true);
+    setIsWorkoutActive(false);
+    setActiveWorkout(null);
   };
+
+// ... (keep all other code in Dashboard.jsx the same)
+  
+  // NEW: Handler to resume a pending workout
+  const handleResumeWorkout = () => {
+      if (!pendingWorkout) return;
+      
+      setActiveWorkout(pendingWorkout.originalPlan);
+      setCurrentExerciseIndex(pendingWorkout.currentExerciseIndex);
+      setCurrentSet(pendingWorkout.currentSet);
+      setWorkoutStartTime(pendingWorkout.workoutStartTime);
+      
+      // Resume by going into a prep phase for the current exercise
+      setWorkoutPhase('PREP');
+      setTimer(10);
+      setIsWorkoutActive(true);
+
+      // Pending workout is now active, so clear it from state (it will be cleared from DB on completion)
+      setPendingWorkout(null);
+  };
+
+  // NEW: Handler to discard a pending workout
+  const handleDiscardWorkout = async () => {
+      if (!pendingWorkout) return;
+      if (window.confirm("Are you sure you want to discard this unfinished workout? This cannot be undone.")) {
+          await updateDoc(doc(db, 'users', currentUser.uid), { pendingWorkout: null });
+          setPendingWorkout(null);
+      }
+  };
+
 
   // HANDLER FOR MANUAL BUTTON PRESS (FINISH SET) - Now just forces the phase change via setTimer(1)
   const handleFinishSet = () => {
@@ -186,7 +240,7 @@ const Dashboard = () => {
       setWorkoutPhase('PREP');
       setTimer(10);
     } else {
-      // If skipping the last exercise, end the workout
+      // If skipping the last exercise, treat it as ending prematurely
       handleEndPrematurely();
     }
   };
@@ -222,11 +276,12 @@ const Dashboard = () => {
                         setWorkoutPhase('PREP');
                         setTimer(10);
                     } else {
-                        saveWorkout(activeWorkout, false);
+                        // UPDATED: Pass false for isPartial, as this is a full completion
+                        saveWorkout(activeWorkout);
                     }
                 }
             }
-        }, 500); // 3 seconds delay
+        }, 500); 
 
         // Return a cleanup function for the timeout
         return () => clearTimeout(delayTimeout);
@@ -288,8 +343,20 @@ const Dashboard = () => {
     await updateDoc(doc(db, 'users', currentUser.uid), { workoutPlan: updatedPlan });
     setWorkoutPlan(updatedPlan);
   };
-  const startWorkout = (plan) => {
+  
+  // UPDATED: Checks for a pending workout before starting a new one.
+  const startWorkout = async (plan) => {
     if (plan.exercises.length === 0) return;
+    
+    if (pendingWorkout) {
+        if (!window.confirm("You have an unfinished workout. Starting a new one will discard the old one's progress. Continue?")) {
+            return;
+        }
+        // Discard the old one before starting the new one
+        await updateDoc(doc(db, 'users', currentUser.uid), { pendingWorkout: null });
+        setPendingWorkout(null);
+    }
+    
     setActiveWorkout(plan);
     setCurrentExerciseIndex(0);
     setCurrentSet(1);
@@ -298,6 +365,7 @@ const Dashboard = () => {
     setWorkoutStartTime(Date.now());
     setIsWorkoutActive(true);
   };
+  
   const handleQuickStart = (exerciseName) => {
     const libraryItem = exerciseLibrary.find(ex => ex.name === exerciseName);
     const quickStartPlan = {
@@ -314,6 +382,10 @@ const Dashboard = () => {
     <div className="min-h-screen bg-slate-900 text-white p-4 sm:p-8">
       <main className="max-w-7xl mx-auto">
         <Header onLogout={handleLogout} onClearHistory={handleClearHistory} />
+        
+        {/* NEW: Render the prompt if a pending workout exists and a workout is NOT active */}
+     
+
         <KpiCards kpis={kpis} />
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-8">
           <WeeklyChart data={weeklyChartData} />
@@ -324,6 +396,13 @@ const Dashboard = () => {
             onAddExercise={() => setIsModalOpen(true)}
           />
         </div>
+           {!isWorkoutActive && (
+            <PendingWorkoutPrompt 
+                pendingWorkout={pendingWorkout}
+                onResume={handleResumeWorkout}
+                onDiscard={handleDiscardWorkout}
+            />
+        )}
         <ExerciseLibrary exercises={exerciseLibrary} onQuickStart={handleQuickStart} />
       </main>
       
