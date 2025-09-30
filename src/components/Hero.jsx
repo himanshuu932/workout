@@ -1,13 +1,64 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase'; // Import auth instance
 import { useAuth } from '../context/AuthContext'; // Import the custom hook
+import { FiMenu, FiX } from "react-icons/fi"; // Icons for hamburger menu
 
 import heroBg from '../assets/hero-athlete.png'; 
 import { SiFireship } from "react-icons/si";
 import { FaDumbbell, FaWeightHanging, FaFire } from "react-icons/fa"; 
+const LoggedInNav = ({ handleLogout, navigate }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef(null);
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuRef]);
+
+  const handleLinkClick = (path) => {
+    setIsOpen(false);
+    navigate(path);
+  };
+
+  return (
+    <div className="relative" ref={menuRef}>
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="p-2 border-2 border-white rounded-lg hover:bg-slate-700 transition-colors z-20"
+        aria-label="Toggle menu"
+      >
+        {isOpen ? <FiX size={24} className="text-white" /> : <FiMenu size={24} className="text-white" />}
+      </button>
+
+      {/* Dropdown Menu */}
+      <div 
+        className={`absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-60 opacity-100 p-2' : 'max-h-0 opacity-0 p-0'}`}
+        style={{ pointerEvents: isOpen ? 'auto' : 'none' }} // Prevents interaction when closed
+      >
+        <button 
+          onClick={() => handleLinkClick('/dashboard')}
+          className="w-full text-left px-4 py-2 text-white hover:bg-slate-700 rounded-md transition-colors font-semibold border-b border-slate-700"
+        >
+          Dashboard
+        </button>
+        <button 
+          onClick={handleLogout}
+          className="w-full text-left px-4 py-2 text-red-400 hover:bg-slate-700 rounded-md transition-colors font-semibold"
+        >
+          Log Out
+        </button>
+      </div>
+    </div>
+  );
+};
 // The CountUp and workoutTools array remain unchanged...
 const CountUp = ({ end, duration = 2000, decimals = 0 }) => {
   const [count, setCount] = useState(0);
@@ -77,30 +128,26 @@ const Hero = () => {
 
   return (
     <div
-      className="relative min-h-screen bg-cover bg-top bg-no-repeat md:bg-right-top text-white p-4 md:p-8 flex items-center"
+      className="relative min-h-screen bg-cover bg-top bg-no-repeat  text-white p-4 md:p-8 flex items-center"
       style={{ backgroundImage: `url(${heroBg})` }}
     >
       <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/70 to-transparent"></div>
       <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-slate-900 to-transparent"></div>
 
       <div className="relative mb-20 z-10 w-full max-w-7xl mx-auto flex flex-col justify-between h-[90vh]">
-        <header className="flex justify-between items-center">
+          <header className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <SiFireship size={30} className="text-[#a4f16c]" />
             <h1 className="text-2xl font-bold">FITFLOW</h1>
           </div>
           <nav className="flex items-center gap-4">
             {currentUser ? (
-              <button 
-                onClick={handleLogout}
-                className="font-semibold px-6 py-2 rounded-lg border-2 border-white-500 text-white-500 hover:bg-red-500 hover:text-white transition-colors"
-              >
-                Log Out
-              </button>
+              // Use the new LoggedInNav component for hamburger menu
+              <LoggedInNav handleLogout={handleLogout} navigate={navigate} />
             ) : (
               <button 
                 onClick={() => navigate('/login')}
-                className="font-semibold px-6 py-2 rounded-lg border-2 border-white-600 hover:bg-slate-600 transition-colors"
+                className="font-semibold px-6 py-2 rounded-lg border-2 border-white hover:bg-slate-600 transition-colors"
               >
                 Log In
               </button>

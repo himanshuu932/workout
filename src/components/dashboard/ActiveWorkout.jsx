@@ -34,14 +34,14 @@ const ActiveWorkout = ({ workout, timer, setTimer,phase, currentIndex, currentSe
         />
         <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
             <svg className="absolute w-full h-full transform -rotate-90">
-                <circle cx="50%" cy="50%" r="140" stroke="#334155" strokeWidth="12" fill="transparent" className="hidden md:block" />
+                <circle cx="50%" cy="50%" r="140" stroke="#334155" strokeWidth="12" fill="transparent" className=" md:block" />
                 <circle
                     cx="50%" cy="50%" r="140"
                     stroke="#a4f16c" strokeWidth="12" fill="transparent"
                     strokeLinecap="round"
                     strokeDasharray={circumference}
                     strokeDashoffset={circumference * (1 - progress)}
-                    className="transition-all duration-1000 linear hidden md:block"
+                    className="transition-all duration-1000 linear  md:block"
                 />
             </svg>
             <div className="text-center">
