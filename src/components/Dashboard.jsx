@@ -10,8 +10,8 @@ import WorkoutPlan from './dashboard/WorkoutPlan';
 import ExerciseLibrary from './dashboard/ExerciseLibrary';
 import ActiveWorkout from './dashboard/ActiveWorkout';
 import AddExerciseModal from './dashboard/AddExerciseModal';
-import PendingWorkoutPrompt from './dashboard/PendingWorkoutPrompt'; // Import the new component
-import EditExerciseModal from './dashboard/EditExerciseModal'; // Import the new modal
+import PendingWorkoutPrompt from './dashboard/PendingWorkoutPrompt';
+import EditExerciseModal from './dashboard/EditExerciseModal';
 
 import pushUp from '../assets/push.png';
 import squats from '../assets/squats.png';
@@ -29,6 +29,49 @@ import running from '../assets/run.png';
 import cycling from '../assets/cyc.png';
 import battle from '../assets/rope.png';
 import box from '../assets/box.png';
+
+
+
+const WorkoutReminder = ({ days, onDismiss }) => {
+  // Return nothing if there's no relevant data to show
+  if (days === null || days < 0) {
+    return null;
+  }
+
+  // Handle pluralization for "day" vs "days"
+  const dayText = days === 1 ? 'day' : 'days';
+
+  return (
+    // The main container is now the flex parent.
+    // - `flex`: Activates flexbox layout.
+    // - `justify-between`: Pushes direct children to opposite ends.
+    // - `items-start`: Aligns children to the top.
+    // - `gap-4`: Ensures a minimum space between elements on smaller screens.
+    <div className="relative bg-slate-800/50 p-6 mb-8 rounded-2xl flex items-start justify-between gap-4 shadow-lg border border-[#a4f16c] animate-fade-in-down">
+      
+      {/* 1. Left side: Text content is grouped in its own div */}
+      <div>
+        <h3 className="font-bold text-lg mb-1">👋 Friendly Reminder!</h3>
+        <p className="text-slate-300">
+          It's been <span className="font-bold text-white">{days}</span> {dayText} since your last workout. Ready to get back to it?
+        </p>
+      </div>
+
+      {/* 2. Right side: The button is now a direct child of the flex container */}
+      <button 
+        onClick={onDismiss} 
+        // `flex-shrink-0` prevents the button from being squished by long text
+        className="text-2xl font-bold text-slate-400 hover:text-white transition-colors flex-shrink-0"
+        aria-label="Dismiss reminder"
+      >
+        &times;
+      </button>
+      
+    </div>
+  );
+};
+
+
 
  const exerciseLibrary = [
   { name: 'Push-ups', caloriesPerSet: 5, imageUrl: pushUp, duration: 45 },
@@ -64,10 +107,13 @@ const Dashboard = () => {
   const [timer, setTimer] = useState(0);
   const [workoutStartTime, setWorkoutStartTime] = useState(null);
 
-  // NEW: State for pending workout
   const [pendingWorkout, setPendingWorkout] = useState(null);
-   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [exerciseToEdit, setExerciseToEdit] = useState(null);
+  
+  // NEW: State to manage the visibility of the reminder notification.
+  const [isReminderVisible, setIsReminderVisible] = useState(true);
+
   useEffect(() => {
     if (currentUser) {
       const fetchUserData = async () => {
@@ -78,7 +124,6 @@ const Dashboard = () => {
           const data = docSnap.data();
           setWorkoutPlan(data.workoutPlan || { name: 'My First Workout', exercises: [] });
           setHistory(data.history || []);
-          // NEW: Load pending workout from database
           setPendingWorkout(data.pendingWorkout || null);
         } else {
           setWorkoutPlan({ name: 'My First Workout', exercises: [] });
@@ -90,6 +135,14 @@ const Dashboard = () => {
     }
   }, [currentUser]);
   
+  // NEW: Check session storage on component mount to see if the reminder was already dismissed.
+  useEffect(() => {
+    const dismissed = sessionStorage.getItem('workoutReminderDismissed');
+    if (dismissed === 'true') {
+        setIsReminderVisible(false);
+    }
+  }, []);
+
   const enrichedWorkoutPlan = useMemo(() => {
     if (!workoutPlan) return null;
     return {
@@ -120,10 +173,24 @@ const Dashboard = () => {
     const todayIndex = new Date().getDay();
     return [...data.slice(todayIndex + 1), ...data.slice(0, todayIndex + 1)];
   }, [history]);
+
+  // NEW: Calculate the number of days since the user's last workout.
+  const daysSinceLastWorkout = useMemo(() => {
+    if (!history || history.length === 0) return null; // No workouts logged yet.
+    const lastWorkoutDate = new Date(history[0].date);
+    const today = new Date();
+    const differenceInTime = today.getTime() - lastWorkoutDate.getTime();
+    return Math.floor(differenceInTime / (1000 * 3600 * 24));
+  }, [history]);
+
+  // NEW: Handler to dismiss the reminder for the current browser session.
+  const handleDismissReminder = () => {
+    setIsReminderVisible(false);
+    sessionStorage.setItem('workoutReminderDismissed', 'true');
+  };
   
 // --- Handlers for Workout Flow ---
 
-  // UPDATED: No longer takes 'isPartial'. A saved workout is always a complete one.
   const saveWorkout = async (workoutToSave) => {
     const durationInSeconds = Math.round((Date.now() - workoutStartTime) / 1000);
     const workoutName = `Workout - ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
@@ -140,11 +207,10 @@ const Dashboard = () => {
       duration: durationInSeconds, 
       caloriesBurned, 
       exercises: workoutToSave.exercises,
-      isPartial: false // A saved workout is never partial in this new logic
+      isPartial: false
     };
     
     const updatedHistory = [completedWorkout, ...history];
-    // Also ensure the pending workout is cleared from DB upon successful completion
     await updateDoc(doc(db, 'users', currentUser.uid), { history: updatedHistory, pendingWorkout: null });
     setHistory(updatedHistory);
     setPendingWorkout(null);
@@ -154,49 +220,41 @@ const Dashboard = () => {
   };
 
    const handleDeleteExercise = async (exerciseId) => {
-    // Add this confirmation dialog
     if (window.confirm("Are you sure you want to remove this exercise?")) {
       if (!workoutPlan) return;
       
-      // Filter out the exercise with the matching ID
       const updatedExercises = workoutPlan.exercises.filter(ex => ex.id !== exerciseId);
       const updatedPlan = { ...workoutPlan, exercises: updatedExercises };
       
-      // Update the database
       await updateDoc(doc(db, 'users', currentUser.uid), { workoutPlan: updatedPlan });
-      
-      // Update the local state to re-render the component
       setWorkoutPlan(updatedPlan);
     }
   };
+
   const handleEndPrematurely = async () => {
     if (!activeWorkout) return;
     if (!window.confirm("Are you sure you want to end the workout early? Your progress will be paused.")) {
         return;
     }
 
-    // NEW: Calculate calories burned so far before pausing
     let caloriesBurnedSoFar = 0;
     const completedExercises = activeWorkout.exercises.slice(0, currentExerciseIndex);
     completedExercises.forEach(ex => {
-        // Ensure caloriesPerSet is a number to avoid NaN issues
         caloriesBurnedSoFar += (ex.sets || 0) * (ex.caloriesPerSet || 0);
     });
 
     const currentExercise = activeWorkout.exercises[currentExerciseIndex];
     if (currentExercise && currentSet > 1) {
-        // Add calories for completed sets of the current exercise
         caloriesBurnedSoFar += (currentSet - 1) * (currentExercise.caloriesPerSet || 0);
     }
     
-    // UPDATED: The new object now includes pauseTime and caloriesBurnedSoFar
     const newPendingWorkout = {
       originalPlan: activeWorkout,
       currentExerciseIndex: currentExerciseIndex,
       currentSet: currentSet,
       workoutStartTime: workoutStartTime,
-      pauseTime: Date.now(), // NEW: Record the exact time of pausing
-      caloriesBurnedSoFar: Math.round(caloriesBurnedSoFar) // NEW: Record calories
+      pauseTime: Date.now(),
+      caloriesBurnedSoFar: Math.round(caloriesBurnedSoFar)
     };
 
     await updateDoc(doc(db, 'users', currentUser.uid), { pendingWorkout: newPendingWorkout });
@@ -205,10 +263,7 @@ const Dashboard = () => {
     setIsWorkoutActive(false);
     setActiveWorkout(null);
   };
-
-// ... (keep all other code in Dashboard.jsx the same)
   
-  // NEW: Handler to resume a pending workout
   const handleResumeWorkout = () => {
       if (!pendingWorkout) return;
       
@@ -217,16 +272,13 @@ const Dashboard = () => {
       setCurrentSet(pendingWorkout.currentSet);
       setWorkoutStartTime(pendingWorkout.workoutStartTime);
       
-      // Resume by going into a prep phase for the current exercise
       setWorkoutPhase('PREP');
       setTimer(10);
       setIsWorkoutActive(true);
 
-      // Pending workout is now active, so clear it from state (it will be cleared from DB on completion)
       setPendingWorkout(null);
   };
 
-  // NEW: Handler to discard a pending workout
   const handleDiscardWorkout = async () => {
       if (!pendingWorkout) return;
       if (window.confirm("Are you sure you want to discard this unfinished workout? This cannot be undone.")) {
@@ -236,14 +288,9 @@ const Dashboard = () => {
   };
 
 
-  // HANDLER FOR MANUAL BUTTON PRESS (FINISH SET) - Now just forces the phase change via setTimer(1)
   const handleFinishSet = () => {
     if (!activeWorkout || workoutPhase !== 'WORK') return;
-    
-    // Force the timer to 1. The next interval tick (within 1 second) will call handleTimerEnd, 
-    // which contains the new 3-second delay logic.
     setTimer(1); 
-    console.log("Manual finish: Forcing timer to 1 to trigger delayed transition.");
   };
 
   const handleSkipExercise = () => {
@@ -255,7 +302,6 @@ const Dashboard = () => {
       setWorkoutPhase('PREP');
       setTimer(10);
     } else {
-      // If skipping the last exercise, treat it as ending prematurely
       handleEndPrematurely();
     }
   };
@@ -267,29 +313,24 @@ const Dashboard = () => {
   const handleUpdateExercise = async (updatedExercise) => {
     if (!workoutPlan || !updatedExercise) return;
 
-    // Find and update the exercise in the plan
     const updatedExercises = workoutPlan.exercises.map(ex => 
       ex.id === updatedExercise.id ? updatedExercise : ex
     );
-
     const updatedPlan = { ...workoutPlan, exercises: updatedExercises };
 
-    // Save to Firestore and update local state
     await updateDoc(doc(db, 'users', currentUser.uid), { workoutPlan: updatedPlan });
     setWorkoutPlan(updatedPlan);
 
-    // Close the modal
     setIsEditModalOpen(false);
     setExerciseToEdit(null);
   };
-  // CRITICAL FIX: The handleTimerEnd function now wraps phase transitions in a 3-second setTimeout.
+  
   useEffect(() => {
     if (!isWorkoutActive || !activeWorkout) return;
 
     const handleTimerEnd = () => {
         const currentExercise = activeWorkout.exercises[currentExerciseIndex];
         
-        // Use a 3-second delay for all phase transitions
         const delayTimeout = setTimeout(() => {
             if (workoutPhase === 'PREP') {
                 const workDuration = Math.max(currentExercise.duration || 0, 30);
@@ -313,14 +354,12 @@ const Dashboard = () => {
                         setWorkoutPhase('PREP');
                         setTimer(10);
                     } else {
-                        // UPDATED: Pass false for isPartial, as this is a full completion
                         saveWorkout(activeWorkout);
                     }
                 }
             }
         }, 500); 
 
-        // Return a cleanup function for the timeout
         return () => clearTimeout(delayTimeout);
       };
 
@@ -328,21 +367,14 @@ const Dashboard = () => {
     const countdown = setInterval(() => {
       setTimer(prev => {
         if (prev <= 1) {
-          // IMPORTANT: Clear interval first, then execute the delayed handler
           clearInterval(countdown);
-          const cleanupTimeout = handleTimerEnd(); // Execute the handler which sets the delay
-          
-          // The effect cleanup will now manage the timeout itself
-          
-          // Return the last non-zero value (1) to prevent the visual flash of 0.
+          handleTimerEnd();
           return 1; 
         }
         return prev - 1;
       });
     }, 1000);
 
-    // This cleanup runs when the component unmounts OR when dependencies change.
-    // It must clear both the interval AND the ongoing timeout (if any).
     return () => {
         clearInterval(countdown);
     };
@@ -381,7 +413,6 @@ const Dashboard = () => {
     setWorkoutPlan(updatedPlan);
   };
   
-  // UPDATED: Checks for a pending workout before starting a new one.
   const startWorkout = async (plan) => {
     if (plan.exercises.length === 0) return;
     
@@ -389,7 +420,6 @@ const Dashboard = () => {
         if (!window.confirm("You have an unfinished workout. Starting a new one will discard the old one's progress. Continue?")) {
             return;
         }
-        // Discard the old one before starting the new one
         await updateDoc(doc(db, 'users', currentUser.uid), { pendingWorkout: null });
         setPendingWorkout(null);
     }
@@ -419,8 +449,15 @@ const Dashboard = () => {
     <div className="min-h-screen bg-slate-900 text-white p-4 sm:p-8">
       <main className="max-w-7xl mx-auto">
         <Header onLogout={handleLogout} onClearHistory={handleClearHistory} />
-      
 
+        {/* NEW: Render the reminder component if it's visible */}
+        {isReminderVisible && (
+            <WorkoutReminder 
+                days={daysSinceLastWorkout} 
+                onDismiss={handleDismissReminder} 
+            />
+        )}
+      
         <KpiCards kpis={kpis} />
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-8">
           <WeeklyChart data={weeklyChartData} />
