@@ -1,15 +1,24 @@
 // src/components/dashboard/ExerciseLibrary.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { FaPlay } from 'react-icons/fa';
 
 // UPDATED: Now receives an 'exercises' prop (array of objects)
 const ExerciseLibrary = ({ exercises, onQuickStart }) => {
+  // --- ENHANCEMENT: State to manage visibility of extra exercises ---
+  const [showAll, setShowAll] = useState(false);
+  
+  // --- ENHANCEMENT: Define how many exercises to show initially ---
+  const initialLimit = 4;
+  const displayedExercises = showAll ? exercises : exercises.slice(0, initialLimit);
+
   return (
     <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
-      <h3 className="text-xl font-bold mb-4">Exercise Library</h3>
+      {/* --- ENHANCEMENT: Centered heading on mobile/tabs --- */}
+      <h3 className="text-xl font-bold mb-4 text-center sm:text-left">Exercise Library</h3>
+      
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {/* UPDATED: Map over the 'exercises' array */}
-        {exercises.map(exercise => (
+        {/* UPDATED: Map over the 'displayedExercises' array */}
+        {displayedExercises.map(exercise => (
           <div key={exercise.name} className="bg-slate-700/50 rounded-lg flex flex-col overflow-hidden group">
             <img 
               // UPDATED: Use the specific imageUrl from the object
@@ -32,6 +41,18 @@ const ExerciseLibrary = ({ exercises, onQuickStart }) => {
           </div>
         ))}
       </div>
+
+      {/* --- ENHANCEMENT: "Explore More" button to prevent overcrowding --- */}
+      {exercises.length > initialLimit && (
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={() => setShowAll(!showAll)}
+            className="font-semibold text-md text-[#a4f16c] border-2 border-[#a4f16c] hover:bg-[#a4f16c]/20 py-2 px-6 rounded-lg transition-colors"
+          >
+            {showAll ? 'Show Less' : 'Explore More'}
+          </button>
+        </div>
+      )}
     </div>
   );
 };
