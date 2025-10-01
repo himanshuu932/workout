@@ -46,49 +46,39 @@ const PlaceholderForm = () => (
 
 
 const AuthLayout = ({ children }) => {
-    // The useNavigate hook is removed as we cannot use react-router-dom in a single file component.
-    // The "Home" button is now a simple anchor tag.
-     const navigate = useNavigate();
+    const navigate = useNavigate();
     return (
         <div 
-            // The background image is applied here, with responsive positioning classes.
             className="min-h-screen w-full bg-cover bg-no-repeat "
             style={{ 
                 backgroundImage: `url(${loginBgUrl})`,
             }}
         >
-            {/* This div creates the dark overlay and blur effect over the entire page */}
             <div className="min-h-screen w-full flex flex-col bg-black bg-opacity-60 backdrop-blur-sm">
                 
-                {/* --- HEADER --- */}
-                {/* The header is now placed inside the blurred container for a cohesive look. */}
-                {/* It uses a container, padding, and flexbox for clean, responsive alignment. */}
                 <header className="w-full">
                     <div className="container mx-auto flex justify-between items-center p-4 sm:p-6">
                         <div className="flex items-center gap-3">
                             <FireshipIcon />
-                            {/* The color of "FITFLOW" is now set to white. */}
                             <h1 className="text-2xl font-bold text-white">FITFLOW</h1>
                         </div>
                         <nav>
                             <button 
-                    onClick={() => navigate('/')}
-                    className="absolute top-4 right-4 z-10 font-semibold px-5 py-2 rounded-lg border-2 border-white text-white hover:bg-white hover:text-black transition-colors duration-300"
-                >
-                    Home
-                </button>
+                                onClick={() => navigate('/')}
+                                className="font-semibold px-5 py-2 rounded-lg border-2 border-white text-white hover:bg-white hover:text-black transition-colors duration-300"
+                            >
+                                Home
+                            </button>
                         </nav>
                     </div>
                 </header>
 
-                {/* --- MAIN CONTENT --- */}
-                {/* The main content area takes up the remaining height and centers the grid. */}
                 <main className="flex-grow flex items-center p-4 sm:p-6 md:p-8">
-                     {/* The grid now becomes 2 columns only on large screens (lg) */}
-                    <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                     
-                    {/* Left Side: Branding Text (with responsive font sizes and spacing) */}
-                    <div className="text-center md:text-left p-4 pt-16 md:pt-4">
+                    {/* Left Side: Branding Text */}
+                    {/* MODIFICATION: Changed md responsive prefixes to lg to match the grid */}
+                    <div className="text-center lg:text-left p-4 pt-16 lg:pt-4">
                         <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-[#a4f16c] uppercase tracking-wider mb-4">
                             FITFLOW
                         </h1>
@@ -109,6 +99,4 @@ const AuthLayout = ({ children }) => {
     );
 };
 
-
-// Main App component to render the AuthLayout with a placeholder form.
 export default AuthLayout;
