@@ -1,12 +1,13 @@
+// src/components/dashboard/Header.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SiFireship } from 'react-icons/si';
-import { FaHistory, FaTrash, FaBars, FaTimes, FaHome } from 'react-icons/fa'; // Import FaHome
+import { FaHistory, FaTrash, FaBars, FaTimes, FaHome, FaUserCircle } from 'react-icons/fa'; // Import FaUserCircle
 
 const Header = ({ onClearHistory, onLogout }) => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef(null); // Ref to detect clicks outside the menu
+  const menuRef = useRef(null); 
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -14,20 +15,19 @@ const Header = ({ onClearHistory, onLogout }) => {
 
   const handleNavigation = (path) => {
     navigate(path);
-    setIsMenuOpen(false); // Close menu on navigation
+    setIsMenuOpen(false);
   };
 
   const handleLogoutClick = () => {
     onLogout();
-    setIsMenuOpen(false); // Close menu after logout
+    setIsMenuOpen(false);
   };
 
   const handleClearHistoryClick = () => {
     onClearHistory();
-    setIsMenuOpen(false); // Close menu after clearing history
+    setIsMenuOpen(false); 
   };
   
-  // NEW: useEffect for closing the menu when clicking outside (like in Hero.jsx)
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -40,18 +40,15 @@ const Header = ({ onClearHistory, onLogout }) => {
 
 
   return (
-    // Wrap the entire header in a relative div to correctly position the mobile menu
     <header className="relative max-w-7xl mx-auto flex justify-between items-center mb-8 md:mb-12 p-4 text-white">
 
       <div className="flex items-center gap-2 z-20"> 
-        {/* Added link to Home page when clicking the title/logo */}
         <button onClick={() => navigate('/')} className="flex items-center gap-2 cursor-pointer">
           <SiFireship size={30} className="text-[#a4f16c]" />
           <h1 className="text-2xl font-bold">DASHBOARD</h1>
         </button>
       </div>
 
-      {/* MODIFIED: Mobile Hamburger Button and Menu Container (Now hidden on LG screens and up) */}
       <div className="relative lg:hidden z-20" ref={menuRef}> 
         <button 
           className="text-2xl" 
@@ -61,14 +58,19 @@ const Header = ({ onClearHistory, onLogout }) => {
           {isMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
-        {/* MODIFIED: Mobile Dropdown Menu (Now hidden on LG screens and up) */}
         <div 
           className={`absolute right-0 top-full mt-2 w-48 bg-slate-800 rounded-lg shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${
-            isMenuOpen ? 'max-h-60 opacity-100 p-2' : 'max-h-0 opacity-0 p-0'
+            isMenuOpen ? 'max-h-80 opacity-100 p-2' : 'max-h-0 opacity-0 p-0'
           }`}
-          style={{ pointerEvents: isMenuOpen ? 'auto' : 'none' }} // Prevents interaction when closed
+          style={{ pointerEvents: isMenuOpen ? 'auto' : 'none' }}
         >
-          {/* Menu Items */}
+          {/* NEW: Profile button added to mobile menu */}
+          <button 
+            onClick={() => handleNavigation('/profile')} 
+            className="w-full text-left px-4 py-2 text-white hover:bg-slate-700 rounded-md transition-colors font-semibold"
+          >
+            <FaUserCircle className="inline mr-2" /> Profile
+          </button>
           <button 
             onClick={() => handleNavigation('/')} 
             className="w-full text-left px-4 py-2 text-white hover:bg-slate-700 rounded-md transition-colors font-semibold"
@@ -97,8 +99,14 @@ const Header = ({ onClearHistory, onLogout }) => {
         </div>
       </div>
 
-      {/* MODIFIED: Desktop Navigation (Now shown from LG screens and up) */}
       <nav className="hidden lg:flex items-center gap-4">
+        {/* NEW: Profile button added to desktop nav */}
+        <button 
+          onClick={() => handleNavigation('/profile')} 
+          className="font-semibold px-4 py-2 hover:text-[#a4f16c] transition-colors"
+        >
+          <FaUserCircle className="inline mr-2" /> Profile
+        </button>
         <button 
           onClick={() => handleNavigation('/')} 
           className="font-semibold px-4 py-2 hover:text-[#a4f16c] transition-colors"

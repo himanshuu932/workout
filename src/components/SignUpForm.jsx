@@ -1,12 +1,15 @@
+// src/components/SignUpForm.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
-import AuthLayout from './AuthLayout'; // <-- Import the new layout
-import { HiOutlineMail, HiOutlineLockClosed } from 'react-icons/hi'; // <-- Import icons
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth, db } from '../firebase';
+import { doc, setDoc } from "firebase/firestore"; 
+import AuthLayout from './AuthLayout';
+import { HiOutlineMail, HiOutlineLockClosed, HiOutlineUser } from 'react-icons/hi'; 
 
 const SignUpForm = () => {
     const [formData, setFormData] = useState({
+        name: '', // <-- NEW: Added name field
         email: '',
         password: '',
         confirmPassword: '',
@@ -31,10 +34,24 @@ const SignUpForm = () => {
         }
 
         try {
-            await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+            const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+            const user = userCredential.user;
+
+            // NEW: Update Firebase Auth profile with display name
+            await updateProfile(user, { displayName: formData.name });
+
+            // NEW: Create a user document in Firestore
+            await setDoc(doc(db, "users", user.uid), {
+                name: formData.name,
+                email: formData.email,
+                history: [],
+                workoutPlan: { name: 'My First Workout', exercises: [] },
+            });
+
             console.log("Account created successfully!");
             navigate('/login');
         } catch (err) {
+            // ... (error handling remains the same)
             if (err.code === 'auth/email-already-in-use') {
                 setError('This email address is already in use.');
             } else if (err.code === 'auth/invalid-email') {
@@ -59,6 +76,20 @@ const SignUpForm = () => {
                 {error && <p className="bg-red-500 bg-opacity-30 text-red-300 text-sm text-center p-3 rounded-lg mb-4">{error}</p>}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* NEW: Full Name Input */}
+                    <div className="relative">
+                        <HiOutlineUser className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />
+                        <input
+                            type="text"
+                            id="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            className="w-full bg-gray-700 border border-gray-600 text-white rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#a4f16c]"
+                            placeholder="Full Name"
+                            required
+                        />
+                    </div>
+
                     {/* Email Input */}
                     <div className="relative">
                         <HiOutlineMail className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />

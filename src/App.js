@@ -7,6 +7,7 @@ import SignUpForm from './components/SignUpForm';
 import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
 import History from './components/History';
+import Profile from './components/Profile'; // <-- Import Profile
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -33,6 +34,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <History />
+                </ProtectedRoute>
+              } 
+            />
+            {/* NEW: Added the protected route for the profile page */}
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               } 
             />
