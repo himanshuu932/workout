@@ -2,8 +2,16 @@ import React from 'react';
 import { SiFireship } from 'react-icons/si';
 import { FaTwitter, FaInstagram, FaFacebookF } from 'react-icons/fa';
 
-const Footer = () => {
+// MODIFICATION: Accept handleScroll prop
+const Footer = ({ handleScroll }) => {
   const currentYear = new Date().getFullYear();
+  
+  // A helper component for consistent styling
+  const ScrollButton = ({ id, children }) => (
+    <button onClick={() => handleScroll(id)} className="text-left hover:text-white transition-colors">
+      {children}
+    </button>
+  );
 
   return (
     <footer className="bg-slate-950 text-slate-400">
@@ -23,11 +31,12 @@ const Footer = () => {
             </div>
           </div>
           
+          {/* MODIFICATION: Links converted to scrollable buttons */}
           <div>
             <h3 className="text-sm font-semibold text-gray-200 tracking-wider uppercase">Product</h3>
             <ul className="mt-4 space-y-2">
-              <li><a href="#" className="hover:text-white">Features</a></li>
-              <li><a href="#" className="hover:text-white">Pricing</a></li>
+              <li><ScrollButton id="features">Features</ScrollButton></li>
+              <li><ScrollButton id="pricing">Pricing</ScrollButton></li>
               <li><a href="#" className="hover:text-white">Updates</a></li>
             </ul>
           </div>
@@ -36,7 +45,7 @@ const Footer = () => {
             <ul className="mt-4 space-y-2">
               <li><a href="#" className="hover:text-white">About</a></li>
               <li><a href="#" className="hover:text-white">Blog</a></li>
-              <li><a href="#" className="hover:text-white">Contact</a></li>
+              <li><ScrollButton id="contact">Contact</ScrollButton></li>
             </ul>
           </div>
           <div>

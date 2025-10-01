@@ -12,20 +12,36 @@ import Footer from './landing/Footer';
 import Contact from './landing/Contact';
 
 const LandingPage = () => {
+  // Function to handle smooth scrolling
+  const handleScroll = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="bg-slate-900">
+      {/* Pass scroll handler to Hero */}
+      <Hero handleScroll={handleScroll} />
       <main>
-        <Hero />
-        <Features />
+        {/* Added section wrappers with IDs */}
+        <section id="features">
+          <Features />
+        </section>
         <HowItWorks />
         <Testimonials />
-        <Pricing />
+        <section id="pricing">
+          <Pricing />
+        </section>
         <CTA />
-        <Contact/>
+        <section id="contact">
+          <Contact />
+        </section>
         <FAQ />
-        
       </main>
-      <Footer />
+      {/* Pass scroll handler to Footer */}
+      <Footer handleScroll={handleScroll} />
     </div>
   );
 };

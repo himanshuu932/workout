@@ -9,7 +9,6 @@ import heroBg from '../../assets/hero-athlete.png';
 import { SiFireship } from "react-icons/si";
 import { FaDumbbell, FaWeightHanging, FaFire } from "react-icons/fa";
 
-// The LoggedInNav and CountUp components remain unchanged...
 const LoggedInNav = ({ handleLogout, navigate }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
@@ -30,10 +29,10 @@ const LoggedInNav = ({ handleLogout, navigate }) => {
   };
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative z-50" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 border-2 border-white rounded-lg hover:bg-slate-700 transition-colors z-20"
+        className="p-2 border-2 border-white rounded-lg hover:bg-slate-700 transition-colors"
         aria-label="Toggle menu"
       >
         {isOpen ? <FiX size={24} className="text-white" /> : <FiMenu size={24} className="text-white" />}
@@ -59,6 +58,49 @@ const LoggedInNav = ({ handleLogout, navigate }) => {
   );
 };
 
+// NEW: Hamburger menu for logged-out users on mobile
+const GuestNav = ({ handleScroll, navigate }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuRef]);
+
+  const handleActionClick = (action) => {
+    setIsOpen(false);
+    action();
+  };
+
+  return (
+    <div className="relative z-50 md:hidden" ref={menuRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="p-2 border-2 border-white rounded-lg hover:bg-slate-700 transition-colors"
+        aria-label="Toggle menu"
+      >
+        {isOpen ? <FiX size={24} className="text-white" /> : <FiMenu size={24} className="text-white" />}
+      </button>
+      <div
+        className={`absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100 p-2' : 'max-h-0 opacity-0 p-0'}`}
+        style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
+      >
+        <button onClick={() => handleActionClick(() => handleScroll('features'))} className="w-full text-left px-4 py-2 text-white hover:bg-slate-700 rounded-md transition-colors font-semibold">Features</button>
+        <button onClick={() => handleActionClick(() => handleScroll('pricing'))} className="w-full text-left px-4 py-2 text-white hover:bg-slate-700 rounded-md transition-colors font-semibold">Pricing</button>
+        <button onClick={() => handleActionClick(() => handleScroll('contact'))} className="w-full text-left px-4 py-2 text-white hover:bg-slate-700 rounded-md transition-colors font-semibold">Contact</button>
+        <button onClick={() => handleActionClick(() => navigate('/login'))} className="w-full text-left px-4 py-2 mt-2 text-white bg-[#a4f16c]/20 hover:bg-[#a4f16c]/30 rounded-md transition-colors font-semibold border-t border-slate-700">Log In</button>
+      </div>
+    </div>
+  );
+};
+
+
 const CountUp = ({ end, duration = 2000, decimals = 0 }) => {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -82,7 +124,7 @@ const workoutTools = [
   { icon: <FaFire size={120} className="text-[#a4f16c]" />, text: 'Monitor calories burned and stay on top of your nutrition targets.' }
 ];
 
-const Hero = () => {
+const Hero = ({ handleScroll }) => {
   const [currentToolIndex, setCurrentToolIndex] = useState(0);
   const [typedText, setTypedText] = useState('');
   
@@ -138,17 +180,26 @@ const Hero = () => {
             {currentUser ? (
               <LoggedInNav handleLogout={handleLogout} navigate={navigate} />
             ) : (
-              <button
-                onClick={() => navigate('/login')}
-                className="font-semibold px-6 py-2 rounded-lg border-2 border-white hover:bg-slate-600 transition-colors"
-              >
-                Log In
-              </button>
+              <>
+                {/* Desktop Nav */}
+                <div className='hidden font-semibold px-6 py-2 rounded-lg border-2 border-white hover:bg-slate-600 transition-colors md:flex items-center gap-4'>
+                  <button onClick={() => handleScroll('features')} className="font-semibold hover:text-[#a4f16c] transition-colors">Features</button>
+                  <button onClick={() => handleScroll('pricing')} className="font-semibold hover:text-[#a4f16c] transition-colors">Pricing</button>
+                  <button onClick={() => handleScroll('contact')} className="font-semibold hover:text-[#a4f16c] transition-colors">Contact</button>
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="font-semibold hover:text-[#a4f16c] transition-colors"
+                  >
+                    Log In
+                  </button>
+                </div>
+                {/* Mobile Nav */}
+                <GuestNav handleScroll={handleScroll} navigate={navigate} />
+              </>
             )}
           </nav>
         </header>
 
-        {/* MODIFICATION 1: Adjusted max-width for tablets */}
         <main className="max-w-md mx-auto md:max-w-2xl lg:max-w-1/2 lg:mx-0 text-center lg:text-left flex flex-col items-center lg:items-start">
           <div key={currentToolIndex} className="h-32 flex justify-center lg:justify-start">
             <div className='animate-semicircle-path-large'>
@@ -158,13 +209,11 @@ const Hero = () => {
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
             PLAN YOUR POWER. <br /> TRACK YOUR PROGRESS
           </h2>
-          {/* MODIFICATION 2: Increased text size for tablets */}
           <p className="mt-4 mb-8 text-lg md:text-xl text-slate-400 min-h-[56px] md:min-h-[64px] lg:min-h-[32px]">
             {typedText}
             <span className="animate-pulse">|</span>
           </p>
 
-          {/* MODIFICATION 3: Widened button container for tablets */}
           <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm md:max-w-md">
             <button
               onClick={() => navigate('/signup')}
@@ -172,7 +221,9 @@ const Hero = () => {
             >
               Get Started
             </button>
-            <button className="font-semibold text-white bg-transparent border-2 border-slate-600 hover:bg-slate-600 px-8 py-3 rounded-lg transition-colors w-full">
+            <button 
+              onClick={() => handleScroll('contact')}
+              className="font-semibold text-white bg-transparent border-2 border-slate-600 hover:bg-slate-600 px-8 py-3 rounded-lg transition-colors w-full">
               Contact Us
             </button>
           </div>
