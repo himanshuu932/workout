@@ -7,7 +7,7 @@ const Pricing = () => {
     const Checkmark = () => <FiCheck className="inline-block mr-3 text-[#a4f16c]" size={20} />;
 
     return (
-        <section id="pricing" className="py-2 bg-slate-900">
+        <section id="pricing" className="py-20 bg-slate-900">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <motion.div
                     className="text-center"
@@ -22,7 +22,8 @@ const Pricing = () => {
                     <p className="mt-4 text-lg text-slate-400">Start with a 7-day free trial.</p>
                 </motion.div>
 
-                <div className="mt-16 flex flex-col lg:flex-row justify-center items-center gap-8">
+                {/* MODIFICATION: Changed lg:flex-row to md:flex-row */}
+                <div className="mt-16 flex flex-col md:flex-row justify-center items-center gap-8">
                     {/* Monthly Plan */}
                     <motion.div
                         className="w-full max-w-md bg-slate-800/60 p-8 rounded-2xl border border-slate-700"

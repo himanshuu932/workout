@@ -9,24 +9,21 @@ import Pricing from './landing/Pricing';
 import FAQ from './landing/FAQ';
 import CTA from './landing/CTA';
 import Footer from './landing/Footer';
+import Contact from './landing/Contact';
 
 const LandingPage = () => {
   return (
     <div className="bg-slate-900">
       <main>
-        {/* 1. Hero: Grab attention and state the value proposition. */}
         <Hero />
-        
-        {/* 2. Features: Explain the core benefits and what the app does. */}
         <Features />
-
         <HowItWorks />
-        
-       
-        <CTA />
         <Testimonials />
         <Pricing />
+        <CTA />
+        <Contact/>
         <FAQ />
+        
       </main>
       <Footer />
     </div>

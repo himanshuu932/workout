@@ -25,11 +25,9 @@ const FAQItem = ({ question, answer }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        // MODIFICATION: Added rounded corners and a subtle transition for a cleaner look
         <div className="border-b border-slate-700 last:border-b-0">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                // MODIFICATION: Added padding and hover effect for better interaction
                 className="w-full flex justify-between items-center text-left p-6 hover:bg-slate-800/40 transition-colors duration-300 rounded-lg"
             >
                 <h3 className="text-lg font-semibold text-white">{question}</h3>
@@ -50,7 +48,6 @@ const FAQItem = ({ question, answer }) => {
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
                         className="overflow-hidden"
                     >
-                        {/* MODIFICATION: Added padding for better spacing */}
                         <p className="px-6 pb-6 text-slate-400">{answer}</p>
                     </motion.div>
                 )}
@@ -86,24 +83,27 @@ const FAQItem = ({ question, answer }) => {
 
 const FAQ = () => {
     return (
-        // MODIFICATION: Added relative positioning and overflow-hidden to contain the new bg effect
         <section className="py-24 bg-slate-900 relative overflow-hidden">
-            {/* NEW: Added background glow effect for atmosphere */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60rem] h-[60rem] bg-gradient-radial from-[#a4f16c]/10 to-transparent rounded-full blur-3xl animate-pulse pointer-events-none"></div>
-                {/* Background Effects */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                      {particles.map(p => (
-                        <motion.div
-                          key={p.id}
-                          className="absolute bg-[#a4f16c] rounded-full"
-                          style={{ width: p.size, height: p.size, left: `${p.left}%`, top: `${p.top}%` }}
-                          animate={{ opacity: [p.opacity, p.opacity + 0.2, p.opacity], scale: [1, 1.1, 1] }}
-                          transition={{ duration: p.duration, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: p.delay }}
-                        />
-                      ))}
-                    </div>
-            {/* MODIFICATION: Changed max-w-3xl to max-w-5xl for a wider layout on desktop */}
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            {/* NEW: Gradient overlays to fade the glow at the top and bottom */}
+            <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-slate-900 to-transparent pointer-events-none z-10" />
+            <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-slate-900 to-transparent pointer-events-none z-10" />
+
+            {/* Background Effects */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60rem] h-[60rem] bg-gradient-radial from-[#a4f16c]/10 to-transparent rounded-full blur-3xl animate-pulse pointer-events-none z-0"></div>
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                  {particles.map(p => (
+                    <motion.div
+                      key={p.id}
+                      className="absolute bg-[#a4f16c] rounded-full"
+                      style={{ width: p.size, height: p.size, left: `${p.left}%`, top: `${p.top}%` }}
+                      animate={{ opacity: [p.opacity, p.opacity + 0.2, p.opacity], scale: [1, 1.1, 1] }}
+                      transition={{ duration: p.duration, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: p.delay }}
+                    />
+                  ))}
+            </div>
+            
+            {/* Main Content */}
+            <div className="max-w-[90vw] mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
                 <motion.div
                     className="text-center mb-16"
                     initial={{ opacity: 0, y: 30 }}
@@ -115,7 +115,6 @@ const FAQ = () => {
                         Frequently Asked <span className="text-[#a4f16c]">Questions</span>
                     </h2>
                 </motion.div>
-                {/* NEW: Added a container with border and backdrop-blur for the FAQ list */}
                 <motion.div 
                     className="bg-slate-800/40 backdrop-blur-md border border-slate-700 rounded-2xl"
                     initial={{ opacity: 0, y: 50 }}

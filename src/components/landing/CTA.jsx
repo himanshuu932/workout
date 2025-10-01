@@ -29,8 +29,8 @@ const CTA = () => {
             
             <section className="py-32 text-white relative">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-                    <div className="lg:hidden absolute inset-0 overflow-hidden pointer-events-none z-0">
+                    
+                    <div className="xl:hidden absolute inset-0 overflow-hidden pointer-events-none z-0">
                         {particles.map(p => (
                             <motion.div
                                 key={p.id}
@@ -41,8 +41,8 @@ const CTA = () => {
                             />
                         ))}
                     </div>
-
-                    <div className="hidden lg:block">
+                    
+                    <div className="hidden xl:block">
                         <motion.div
                             className="absolute bottom-0 left-0 w-full max-w-xl -translate-x-1/4 z-10 pointer-events-none"
                             initial={{ x: -200, opacity: 0 }}
@@ -70,11 +70,12 @@ const CTA = () => {
                         viewport={{ once: true, amount: 0.3 }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
                     >
-                        <h2 className="text-4xl font-extrabold text-white sm:text-5xl lg:text-5xl">
-                            Ready to Unlock Your Potential?
+                        <h2 className="text-4xl font-extrabold text-[#a4f16c] sm:text-5xl lg:text-5xl">
+                            Unlock Your Potential?
                         </h2>
-                        <p className="mt-6 text-lg text-slate-400 text-justify max-w-2xl mx-auto">
-                            Your personalized fitness journey is just a click away. Join thousands of users who are smashing their goals. What are you waiting for?
+                        {/* MODIFICATION: Added text and text-justify class */}
+                        <p className="mt-6 text-lg text-slate-400 max-w-2xl mx-auto text-justify">
+                            Your personalized fitness journey is just a click away. Join thousands of users who are smashing their goals with our AI-powered platform that designs the perfect workout plan tailored to your body. Stop guessing and start progressing. What are you waiting for?
                         </p>
                         <div className="mt-10">
                             <motion.button 
