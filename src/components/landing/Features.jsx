@@ -74,7 +74,7 @@ const FeatureCard = ({ icon, title, description, index }) => {
 
 const Features = () => {
   return (
-    <section id="features" className="py-10 bg-slate-900 text-white relative overflow-hidden">
+    <section id="features" className="py-5 bg-slate-900 text-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-slate-900 to-transparent pointer-events-none z-10" />
       <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-slate-900 to-transparent pointer-events-none z-10" />
       

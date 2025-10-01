@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { signOut } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
@@ -43,11 +44,6 @@ const WorkoutReminder = ({ days, onDismiss }) => {
   const dayText = days === 1 ? 'day' : 'days';
 
   return (
-    // The main container is now the flex parent.
-    // - `flex`: Activates flexbox layout.
-    // - `justify-between`: Pushes direct children to opposite ends.
-    // - `items-start`: Aligns children to the top.
-    // - `gap-4`: Ensures a minimum space between elements on smaller screens.
     <div className="relative bg-slate-800/50 p-6 mb-8 rounded-2xl flex items-start justify-between gap-4 shadow-lg border border-[#a4f16c] animate-fade-in-down">
       
       {/* 1. Left side: Text content is grouped in its own div */}
@@ -175,22 +171,20 @@ const Dashboard = () => {
     return [...data.slice(todayIndex + 1), ...data.slice(0, todayIndex + 1)];
   }, [history]);
 
-  // NEW: Calculate the number of days since the user's last workout.
   const daysSinceLastWorkout = useMemo(() => {
-    if (!history || history.length === 0) return null; // No workouts logged yet.
+    if (!history || history.length === 0) return null;
     const lastWorkoutDate = new Date(history[0].date);
     const today = new Date();
     const differenceInTime = today.getTime() - lastWorkoutDate.getTime();
     return Math.floor(differenceInTime / (1000 * 3600 * 24));
   }, [history]);
 
-  // NEW: Handler to dismiss the reminder for the current browser session.
   const handleDismissReminder = () => {
     setIsReminderVisible(false);
     sessionStorage.setItem('workoutReminderDismissed', 'true');
   };
   
-// --- Handlers for Workout Flow ---
+
 
   const saveWorkout = async (workoutToSave) => {
     const durationInSeconds = Math.round((Date.now() - workoutStartTime) / 1000);
@@ -443,6 +437,35 @@ const Dashboard = () => {
     startWorkout(quickStartPlan);
   };
   
+  const generatePeripheryParticles = (count, minSize, maxSize, opacityRange) => {
+    const particles = [];
+    for (let i = 0; i < count; i++) {
+      const size = minSize + Math.random() * (maxSize - minSize);
+      const opacity = opacityRange[0] + Math.random() * (opacityRange[1] - opacityRange[0]);
+      const isHorizontal = Math.random() < 0.5; 
+      let left, top;
+      if (isHorizontal) {
+        left = Math.random() * 100;
+        top = Math.random() < 0.5 ? Math.random() * 20 : 80 + Math.random() * 20; 
+      } else {
+        left = Math.random() < 0.5 ? Math.random() * 20 : 80 + Math.random() * 20; 
+        top = Math.random() * 100;
+      }
+
+      particles.push({
+        id: i,
+        size,
+        left,
+        top,
+        delay: Math.random() * 5,
+        duration: Math.random() * 8 + 5, 
+        opacity,
+      });
+    }
+    return particles;
+  };
+
+  const particles = generatePeripheryParticles(40, 2, 6, [0.1, 0.5]); 
 
    if (loading) {
           return (
@@ -452,11 +475,41 @@ const Dashboard = () => {
           );
       }
   return (
-    <div className="min-h-screen bg-slate-900 text-white p-4 sm:p-8">
-      <main className="max-w-7xl mx-auto">
+    <div className="relative min-h-screen bg-slate-900 text-white p-4 sm:p-8 overflow-hidden">
+      
+       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          {particles.map(p => (
+            <motion.div
+              key={p.id}
+              className="absolute bg-[#a4f16c] rounded-full" 
+              style={{
+                width: p.size,
+                height: p.size,
+                left: `${p.left}%`,
+                top: `${p.top}%`,
+              }}
+              
+              animate={{
+                opacity: [p.opacity, p.opacity + 0.2, p.opacity], 
+                scale: [1, 1.1, 1], 
+              }}
+              transition={{
+                duration: p.duration,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut",
+                delay: p.delay,
+              }}
+            />
+          ))}
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+            <div className="w-1/2 h-1/2 bg-gradient-radial from-[#a4f16c]/10 to-transparent rounded-full blur-3xl" />
+        </div>
+      
+      <main className="relative z-10 max-w-7xl mx-auto">
         <Header onLogout={handleLogout} onClearHistory={handleClearHistory} />
 
-        {/* NEW: Render the reminder component if it's visible */}
         {isReminderVisible && (
             <WorkoutReminder 
                 days={daysSinceLastWorkout} 

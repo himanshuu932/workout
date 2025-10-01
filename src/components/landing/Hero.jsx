@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
-import { auth } from '../firebase'; // Import auth instance
-import { useAuth } from '../context/AuthContext'; // Import the custom hook
+import { auth } from '../../firebase'; // Import auth instance
+import { useAuth } from '../../context/AuthContext'; // Import the custom hook
 import { FiMenu, FiX } from "react-icons/fi"; // Icons for hamburger menu
 
-import heroBg from '../assets/hero-athlete.png';
+import heroBg from '../../assets/hero-athlete.png';
 import { SiFireship } from "react-icons/si";
 import { FaDumbbell, FaWeightHanging, FaFire } from "react-icons/fa";
 

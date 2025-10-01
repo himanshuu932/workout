@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import ctaArm from '../assets/cta-arm.png'; 
+import ctaArm from '../../assets/cta-arm.png'; 
 
 const CTA = () => {
     const generatePeripheryParticles = (count, minSize, maxSize, opacityRange) => {
@@ -73,7 +73,7 @@ const CTA = () => {
                         <h2 className="text-4xl font-extrabold text-white sm:text-5xl lg:text-5xl">
                             Ready to Unlock Your Potential?
                         </h2>
-                        <p className="mt-6 text-lg text-slate-400 max-w-2xl mx-auto">
+                        <p className="mt-6 text-lg text-slate-400 text-justify max-w-2xl mx-auto">
                             Your personalized fitness journey is just a click away. Join thousands of users who are smashing their goals. What are you waiting for?
                         </p>
                         <div className="mt-10">
