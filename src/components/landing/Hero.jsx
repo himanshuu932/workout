@@ -9,7 +9,8 @@ import heroBg from '../../assets/hero-athlete.png';
 import { SiFireship } from "react-icons/si";
 import { FaDumbbell, FaWeightHanging, FaFire } from "react-icons/fa";
 
-const LoggedInNav = ({ handleLogout, navigate }) => {
+// MODIFICATION: Added handleScroll prop and menu items
+const LoggedInNav = ({ handleLogout, navigate, handleScroll }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -23,9 +24,9 @@ const LoggedInNav = ({ handleLogout, navigate }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [menuRef]);
 
-  const handleLinkClick = (path) => {
+  const handleActionClick = (action) => {
     setIsOpen(false);
-    navigate(path);
+    action();
   };
 
   return (
@@ -38,15 +39,20 @@ const LoggedInNav = ({ handleLogout, navigate }) => {
         {isOpen ? <FiX size={24} className="text-white" /> : <FiMenu size={24} className="text-white" />}
       </button>
       <div
-        className={`absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-60 opacity-100 p-2' : 'max-h-0 opacity-0 p-0'}`}
+        className={`absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100 p-2' : 'max-h-0 opacity-0 p-0'}`}
         style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
       >
         <button
-          onClick={() => handleLinkClick('/dashboard')}
-          className="w-full text-left px-4 py-2 text-white hover:bg-slate-700 rounded-md transition-colors font-semibold border-b border-slate-700"
+          onClick={() => handleActionClick(() => navigate('/dashboard'))}
+          className="w-full text-left px-4 py-2 text-white hover:bg-slate-700 rounded-md transition-colors font-semibold"
         >
           Dashboard
         </button>
+        <div className="my-1 border-t border-slate-700"></div>
+        <button onClick={() => handleActionClick(() => handleScroll('features'))} className="w-full text-left px-4 py-2 text-white hover:bg-slate-700 rounded-md transition-colors font-semibold">Features</button>
+        <button onClick={() => handleActionClick(() => handleScroll('pricing'))} className="w-full text-left px-4 py-2 text-white hover:bg-slate-700 rounded-md transition-colors font-semibold">Pricing</button>
+        <button onClick={() => handleActionClick(() => handleScroll('contact'))} className="w-full text-left px-4 py-2 text-white hover:bg-slate-700 rounded-md transition-colors font-semibold">Contact</button>
+        <div className="my-1 border-t border-slate-700"></div>
         <button
           onClick={handleLogout}
           className="w-full text-left px-4 py-2 text-red-400 hover:bg-slate-700 rounded-md transition-colors font-semibold"
@@ -58,7 +64,7 @@ const LoggedInNav = ({ handleLogout, navigate }) => {
   );
 };
 
-// NEW: Hamburger menu for logged-out users on mobile
+// Hamburger menu for logged-out users on mobile and tablet
 const GuestNav = ({ handleScroll, navigate }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
@@ -79,7 +85,7 @@ const GuestNav = ({ handleScroll, navigate }) => {
   };
 
   return (
-    <div className="relative z-50 md:hidden" ref={menuRef}>
+    <div className="relative z-50 lg:hidden" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="p-2 border-2 border-white rounded-lg hover:bg-slate-700 transition-colors"
@@ -178,11 +184,36 @@ const Hero = ({ handleScroll }) => {
           </div>
           <nav className="flex items-center gap-4">
             {currentUser ? (
-              <LoggedInNav handleLogout={handleLogout} navigate={navigate} />
+              // Logged-in user nav
+              <>
+                {/* MODIFICATION: Desktop Nav for Logged-In now includes all options */}
+                <div className="hidden px-6 py-2 rounded-lg border-2 border-white hover:bg-slate-600 lg:flex items-center gap-6">
+                  <button
+                    onClick={() => navigate('/dashboard')}
+                    className="ffont-semibold hover:text-[#a4f16c] transition-colors"
+                  >
+                    Dashboard
+                  </button>
+                  <button onClick={() => handleScroll('features')} className="font-semibold hover:text-[#a4f16c] transition-colors">Features</button>
+                  <button onClick={() => handleScroll('pricing')} className="font-semibold hover:text-[#a4f16c] transition-colors">Pricing</button>
+                  <button onClick={() => handleScroll('contact')} className="font-semibold hover:text-[#a4f16c] transition-colors">Contact</button>
+                  
+                  <button
+                    onClick={handleLogout}
+                    className="font-semibold hover:text-[#a4f16c] transition-colors"
+                  >
+                    Log Out
+                  </button>
+                </div>
+                <div className="lg:hidden">
+                  <LoggedInNav handleLogout={handleLogout} navigate={navigate} handleScroll={handleScroll} />
+                </div>
+              </>
             ) : (
+              // Logged-out user nav
               <>
                 {/* Desktop Nav */}
-                <div className='hidden font-semibold px-6 py-2 rounded-lg border-2 border-white hover:bg-slate-600 transition-colors md:flex items-center gap-4'>
+                <div className='hidden px-6 py-2 rounded-lg border-2 border-white hover:bg-slate-600 lg:flex items-center gap-4'>
                   <button onClick={() => handleScroll('features')} className="font-semibold hover:text-[#a4f16c] transition-colors">Features</button>
                   <button onClick={() => handleScroll('pricing')} className="font-semibold hover:text-[#a4f16c] transition-colors">Pricing</button>
                   <button onClick={() => handleScroll('contact')} className="font-semibold hover:text-[#a4f16c] transition-colors">Contact</button>
@@ -193,7 +224,7 @@ const Hero = ({ handleScroll }) => {
                     Log In
                   </button>
                 </div>
-                {/* Mobile Nav */}
+                {/* Mobile & Tablet Nav */}
                 <GuestNav handleScroll={handleScroll} navigate={navigate} />
               </>
             )}
