@@ -1,18 +1,19 @@
-import React, { useState, useEffect,useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase'; // Import auth instance
 import { useAuth } from '../context/AuthContext'; // Import the custom hook
 import { FiMenu, FiX } from "react-icons/fi"; // Icons for hamburger menu
 
-import heroBg from '../assets/hero-athlete.png'; 
+import heroBg from '../assets/hero-athlete.png';
 import { SiFireship } from "react-icons/si";
-import { FaDumbbell, FaWeightHanging, FaFire } from "react-icons/fa"; 
+import { FaDumbbell, FaWeightHanging, FaFire } from "react-icons/fa";
+
+// The LoggedInNav and CountUp components remain unchanged...
 const LoggedInNav = ({ handleLogout, navigate }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -30,26 +31,24 @@ const LoggedInNav = ({ handleLogout, navigate }) => {
 
   return (
     <div className="relative" ref={menuRef}>
-      <button 
+      <button
         onClick={() => setIsOpen(!isOpen)}
         className="p-2 border-2 border-white rounded-lg hover:bg-slate-700 transition-colors z-20"
         aria-label="Toggle menu"
       >
         {isOpen ? <FiX size={24} className="text-white" /> : <FiMenu size={24} className="text-white" />}
       </button>
-
-      {/* Dropdown Menu */}
-      <div 
+      <div
         className={`absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-60 opacity-100 p-2' : 'max-h-0 opacity-0 p-0'}`}
-        style={{ pointerEvents: isOpen ? 'auto' : 'none' }} // Prevents interaction when closed
+        style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
       >
-        <button 
+        <button
           onClick={() => handleLinkClick('/dashboard')}
           className="w-full text-left px-4 py-2 text-white hover:bg-slate-700 rounded-md transition-colors font-semibold border-b border-slate-700"
         >
           Dashboard
         </button>
-        <button 
+        <button
           onClick={handleLogout}
           className="w-full text-left px-4 py-2 text-red-400 hover:bg-slate-700 rounded-md transition-colors font-semibold"
         >
@@ -59,7 +58,7 @@ const LoggedInNav = ({ handleLogout, navigate }) => {
     </div>
   );
 };
-// The CountUp and workoutTools array remain unchanged...
+
 const CountUp = ({ end, duration = 2000, decimals = 0 }) => {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -87,22 +86,18 @@ const Hero = () => {
   const [currentToolIndex, setCurrentToolIndex] = useState(0);
   const [typedText, setTypedText] = useState('');
   
-  // Get current user from context and navigate function
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
-  // Logout handler
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      console.log("User signed out successfully.");
-      navigate('/'); // Redirect to home page after logout
+      navigate('/');
     } catch (error) {
       console.error("Failed to sign out:", error);
     }
   };
 
-  // All your existing useEffect hooks remain the same...
   useEffect(() => {
     const toolInterval = setInterval(() => {
       setCurrentToolIndex(prevIndex => (prevIndex + 1) % workoutTools.length);
@@ -112,7 +107,7 @@ const Hero = () => {
 
   useEffect(() => {
     const targetText = workoutTools[currentToolIndex].text;
-    setTypedText(''); // Clear text before typing new one
+    setTypedText('');
     let charIndex = 0;
     const typingInterval = setInterval(() => {
       if (charIndex < targetText.length) {
@@ -125,27 +120,25 @@ const Hero = () => {
     return () => clearInterval(typingInterval);
   }, [currentToolIndex]);
 
-
   return (
     <div
-      className="relative min-h-screen bg-cover bg-top bg-no-repeat  text-white p-4 md:p-8 flex items-center"
+      className="relative min-h-screen bg-cover bg-top bg-no-repeat text-white p-4 md:p-8 flex items-center"
       style={{ backgroundImage: `url(${heroBg})` }}
     >
       <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/70 to-transparent"></div>
       <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-slate-900 to-transparent"></div>
 
       <div className="relative mb-20 z-10 w-full max-w-7xl mx-auto flex flex-col justify-between h-[90vh]">
-          <header className="flex justify-between items-center">
+        <header className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <SiFireship size={30} className="text-[#a4f16c]" />
             <h1 className="text-2xl font-bold">FITFLOW</h1>
           </div>
           <nav className="flex items-center gap-4">
             {currentUser ? (
-              // Use the new LoggedInNav component for hamburger menu
               <LoggedInNav handleLogout={handleLogout} navigate={navigate} />
             ) : (
-              <button 
+              <button
                 onClick={() => navigate('/login')}
                 className="font-semibold px-6 py-2 rounded-lg border-2 border-white hover:bg-slate-600 transition-colors"
               >
@@ -155,8 +148,8 @@ const Hero = () => {
           </nav>
         </header>
 
-        {/* MODIFIED: Added flex flex-col to enable alignment classes */}
-        <main className="max-w-full lg:max-w-1/2 text-center lg:text-left flex flex-col items-center lg:items-start">
+        {/* MODIFICATION 1: Adjusted max-width for tablets */}
+        <main className="max-w-md mx-auto md:max-w-2xl lg:max-w-1/2 lg:mx-0 text-center lg:text-left flex flex-col items-center lg:items-start">
           <div key={currentToolIndex} className="h-32 flex justify-center lg:justify-start">
             <div className='animate-semicircle-path-large'>
               {workoutTools[currentToolIndex].icon}
@@ -165,13 +158,15 @@ const Hero = () => {
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
             PLAN YOUR POWER. <br /> TRACK YOUR PROGRESS
           </h2>
-          <p className="mt-4 mb-8 text-lg text-slate-400 min-h-[56px] lg:min-h-[28px]">
+          {/* MODIFICATION 2: Increased text size for tablets */}
+          <p className="mt-4 mb-8 text-lg md:text-xl text-slate-400 min-h-[56px] md:min-h-[64px] lg:min-h-[32px]">
             {typedText}
             <span className="animate-pulse">|</span>
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 w-4/5 max-w-sm mx-auto sm:mx-0">
-            <button 
+          {/* MODIFICATION 3: Widened button container for tablets */}
+          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm md:max-w-md">
+            <button
               onClick={() => navigate('/signup')}
               className="font-semibold text-slate-900 bg-[#a4f16c] hover:bg-[#8cd953] px-8 py-3 rounded-lg transition-colors w-full"
             >
@@ -181,7 +176,6 @@ const Hero = () => {
               Contact Us
             </button>
           </div>
-
 
           <div className="w-full flex justify-center lg:justify-start gap-8 md:gap-16 mt-5">
             <div className="text-center">
