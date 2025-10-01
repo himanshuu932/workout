@@ -39,8 +39,9 @@ const StepCard = ({ number, title, description, index }) => {
     };
 
     return (
+        // MODIFICATION: Changed `md:translate-y-16` to `lg:translate-y-16`
         <motion.div
-            className={`relative p-8 text-center flex flex-col items-center ${index === 1 ? 'md:translate-y-16' : ''}`}
+            className={`relative p-8 text-center flex flex-col items-center ${index === 1 ? 'lg:translate-y-16' : ''}`}
             variants={itemVariants}
         >
             <div
@@ -117,7 +118,7 @@ const HowItWorks = () => {
                 left: `${p.left}%`,
                 top: `${p.top}%`,
               }}
-             
+              
               animate={{
                 opacity: [p.opacity, p.opacity + 0.2, p.opacity], 
                 scale: [1, 1.1, 1], 
@@ -132,17 +133,18 @@ const HowItWorks = () => {
             />
           ))}
         </div>
-           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
             <div className="w-1/2 h-1/2 bg-gradient-radial from-[#a4f16c]/10 to-transparent rounded-full blur-3xl" />
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
           <div className="text-center">
-            <h2 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl">Start Your Transformation</h2>
+            <h2 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl"><span className="text-[#a4f16c]">Start</span> Your Transformation</h2>
             <p className="mt-4 text-lg text-slate-400 max-w-2xl mx-auto">Getting started is simpler than you think. Follow three easy steps to unlock your potential.</p>
           </div>
           
+          {/* MODIFICATION: Updated grid classes for better responsiveness */}
           <motion.div
-            className="mt-24 grid md:grid-cols-3 gap-y-20 md:gap-x-12"
+            className="mt-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-20 md:gap-y-16 md:gap-x-8 lg:gap-x-12"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}

@@ -75,7 +75,7 @@ const FeatureCard = ({ icon, title, description, index }) => {
 const Features = () => {
   return (
     <section id="features" className="py-10 bg-slate-900 text-white relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-slate-900 to-transparent pointer-events-none z-10" />
+        <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-slate-900 to-transparent pointer-events-none z-10" />
       <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-slate-900 to-transparent pointer-events-none z-10" />
       
      <div className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] bg-gradient-radial from-[#a4f16c]/20 to-transparent rounded-full blur-3xl pointer-events-none"></div>
@@ -92,8 +92,9 @@ const Features = () => {
           </p>
         </div>
         
+        {/* MODIFICATION: Updated grid classes for better responsiveness */}
         <motion.div
-          className="mt-16 grid gap-8 md:grid-cols-3"
+          className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
