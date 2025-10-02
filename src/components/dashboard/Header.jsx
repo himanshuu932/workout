@@ -101,12 +101,7 @@ const Header = ({ onClearHistory, onLogout }) => {
 
       <nav className="hidden lg:flex items-center gap-4">
         {/* NEW: Profile button added to desktop nav */}
-        <button 
-          onClick={() => handleNavigation('/profile')} 
-          className="font-semibold px-4 py-2 hover:text-[#a4f16c] transition-colors"
-        >
-          <FaUserCircle className="inline mr-2" /> Profile
-        </button>
+       
         <button 
           onClick={() => handleNavigation('/')} 
           className="font-semibold px-4 py-2 hover:text-[#a4f16c] transition-colors"
@@ -126,6 +121,13 @@ const Header = ({ onClearHistory, onLogout }) => {
         >
           <FaHistory className="inline mr-2" /> History
         </button>
+         <button 
+          onClick={() => handleNavigation('/profile')} 
+          className="font-semibold px-4 py-2 hover:text-[#a4f16c] transition-colors"
+        >
+          <FaUserCircle className="inline mr-2" /> Profile
+        </button>
+        
         <button 
           onClick={onLogout} 
           className="font-semibold px-6 py-2 rounded-lg border-2 border-slate-600 hover:bg-red-500 hover:border-red-500 transition-colors"

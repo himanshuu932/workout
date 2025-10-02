@@ -1,8 +1,7 @@
 // src/components/dashboard/WorkoutPlan.jsx
 import React from 'react';
-import { FaPlus, FaTrash, FaPencilAlt } from 'react-icons/fa'; // Import the edit icon
+import { FaPlus, FaTrash, FaPencilAlt } from 'react-icons/fa';
 
-// Add 'onEditExercise' to the component's props
 const WorkoutPlan = ({ plan, onStart, onClear, onAddExercise, onDeleteExercise, onEditExercise }) => {
   return (
     <div className="lg:col-span-2 bg-slate-800/50 border border-slate-700 rounded-2xl p-6 flex flex-col">
@@ -17,7 +16,8 @@ const WorkoutPlan = ({ plan, onStart, onClear, onAddExercise, onDeleteExercise, 
           </button>
         </div>
       </div>
-      <div className="space-y-3 overflow-y-auto pr-2 flex-grow">
+      {/* MODIFIED: Added custom scrollbar styles */}
+      <div className="space-y-3 overflow-y-auto pr-2 flex-grow max-h-64 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-700/50 [&::-webkit-scrollbar-thumb]:bg-slate-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-[#a4f16c]">
         {plan?.exercises.map(ex => (
           <div key={ex.id} className="group flex items-center gap-4 bg-slate-700/50 p-3 rounded-lg">
             <img 
@@ -29,10 +29,9 @@ const WorkoutPlan = ({ plan, onStart, onClear, onAddExercise, onDeleteExercise, 
               <p className="font-bold">{ex.name}</p>
               <p className="text-sm text-slate-400">{ex.sets}x{ex.reps} reps, {ex.rest}s rest</p>
             </div>
-            {/* Wrapper for the hover buttons */}
             <div className="ml-auto flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
               <button 
-                onClick={() => onEditExercise(ex)} // Pass the whole exercise object
+                onClick={() => onEditExercise(ex)}
                 title="Edit Exercise" 
                 className="text-slate-400 hover:text-[#a4f16c]"
               >

@@ -53,7 +53,7 @@ const History = () => {
             <header className="max-w-7xl mx-auto flex justify-between items-center mb-12 border-b border-slate-800 pb-4">
                 <div className="flex items-center gap-2">
                     <SiFireship size={30} className="text-[#a4f16c]" />
-                    <h1 className="text-2xl font-bold">WORKOUT HISTORY</h1>
+                    <h1 className="text-2xl font-bold">HISTORY</h1>
                 </div>
                 <button
                     onClick={() => navigate('/dashboard')}
