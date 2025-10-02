@@ -25,7 +25,7 @@ const LandingPage = () => {
     <div className="bg-slate-900">
       {/* Pass scroll handler to Hero */}
       <Hero handleScroll={handleScroll} />
-      <main>
+      <main id="main">
         {/* Added section wrappers with IDs */}
         <section id="features">
           <Features />

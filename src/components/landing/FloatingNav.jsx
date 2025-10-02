@@ -1,13 +1,12 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiMenu, FiX } from 'react-icons/fi';
 import { FaLightbulb, FaHome, FaRupeeSign, FaPhoneAlt } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
 
-
 const menuItems = [
   { id: 'dashboard', type: 'navigate', path: '/dashboard', icon: <MdDashboard size={20} />, label: 'Dashboard' },
-  { id: 'page-header', type: 'scroll', icon: <FaHome size={20} />, label: 'Go to Top' },
+  { id: 'page-header', type: 'scroll', icon: <FaHome size={20} />, label: 'Home' },
   { id: 'features', type: 'scroll', icon: <FaLightbulb size={20} />, label: 'Features' },
   { id: 'pricing', type: 'scroll', icon: <FaRupeeSign size={20} />, label: 'Pricing' },
   { id: 'contact', type: 'scroll', icon: <FaPhoneAlt size={20} />, label: 'Contact' },
@@ -19,16 +18,13 @@ const FloatingNav = ({ handleScroll }) => {
   const menuRef = useRef(null);
   const navigate = useNavigate();
 
+  // Effects for visibility and click-outside are unchanged...
   useEffect(() => {
     const toggleVisibility = () => {
-      const header = document.getElementById('page-header');
-      if (header) {
-        if (window.scrollY > header.offsetHeight) {
-          setIsVisible(true);
-        } else {
-          setIsVisible(false);
-          setIsOpen(false);
-        }
+        if (window.scrollY > 100) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
       }
     };
     window.addEventListener('scroll', toggleVisibility);
@@ -57,27 +53,41 @@ const FloatingNav = ({ handleScroll }) => {
   return (
     <div
       ref={menuRef}
-      className={`fixed bottom-12 right-8 z-50 transition-all duration-300 ${
+           className={`fixed bottom-12 right-8 z-50 transition-all duration-300 transform-gpu ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
       }`}
+
     >
+      {/* MODIFICATION: The map now renders a container div for the button and label */}
       {menuItems.map((item, index) => (
-        <button
+        <div
           key={item.id}
-          onClick={() => onMenuButtonClick(item)}
-          className="absolute w-14 h-14 bg-slate-800/95 backdrop-blur-sm text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ease-in-out hover:bg-[#a4f16c] hover:text-slate-900"
+          className="absolute flex flex-col items-center"
           style={{
-            transform: isOpen ? `translateY(-${(index + 1) * 70}px)` : 'translateY(0)',
+            // Increased translateY to make space for the label
+            transform: isOpen ? `translateY(-${(index + 1) * 90}px)` : 'translateY(0)',
             opacity: isOpen ? 1 : 0,
+            transition: 'transform 0.3s ease-out, opacity 0.3s ease-out',
             transitionDelay: isOpen ? `${index * 50}ms` : '0ms',
             pointerEvents: isOpen ? 'auto' : 'none',
-            right: '4px',
-            bottom: '4px'
+            // Centering the container div relative to the main button
+            right: 0,
+            bottom: 0,
+            width: '64px', // Same width as the main button for alignment
           }}
-          aria-label={item.label}
         >
-          {item.icon}
-        </button>
+          <button
+            onClick={() => onMenuButtonClick(item)}
+            className="w-14 h-14 bg-slate-800/95 backdrop-blur-sm text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ease-in-out hover:bg-[#a4f16c] hover:text-slate-900"
+            aria-label={item.label}
+          >
+            {item.icon}
+          </button>
+          {/* New span for the text label */}
+          <span className="mt-2 text-xs text-slate-200 font-semibold whitespace-nowrap">
+            {item.label}
+          </span>
+        </div>
       ))}
 
       <button

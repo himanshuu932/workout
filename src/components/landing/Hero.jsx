@@ -85,7 +85,7 @@ const GuestNav = ({ handleScroll, navigate }) => {
   };
 
   return (
-    <div className="relative z-50 lg:hidden" ref={menuRef}>
+    <div className="relative z-50 lg:hidden " ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="p-2 border-2 border-white rounded-lg hover:bg-slate-700 transition-colors"
@@ -149,7 +149,7 @@ const Hero = ({ handleScroll }) => {
   useEffect(() => {
     const toolInterval = setInterval(() => {
       setCurrentToolIndex(prevIndex => (prevIndex + 1) % workoutTools.length);
-    }, 5000);
+    }, 10000);
     return () => clearInterval(toolInterval);
   }, []);
 
@@ -177,7 +177,7 @@ const Hero = ({ handleScroll }) => {
       <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-slate-900 to-transparent"></div>
 
       <div className="relative mb-20 z-10 w-full max-w-7xl mx-auto flex flex-col justify-between h-[90vh]">
-        <header id="page-header" className="flex justify-between items-center">
+        <header id="page-header"className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <SiFireship size={30} className="text-[#a4f16c]" />
             <h1 className="text-2xl font-bold">FITFLOW</h1>
