@@ -35,7 +35,7 @@ const Pricing = () => {
                         <h3 className="text-2xl font-bold text-white">Monthly</h3>
                         <p className="mt-2 text-slate-400">Flexibility first.</p>
                         <p className="mt-6 text-5xl font-extrabold text-white">
-                            $15 <span className="text-lg font-medium text-slate-400">/ month</span>
+                            ₹150 <span className="text-lg font-medium text-slate-400">/ month</span>
                         </p>
                         <ul className="mt-8 space-y-4 text-slate-300">
                             <li><Checkmark /> Unlimited AI-Generated Workouts</li>
@@ -62,7 +62,7 @@ const Pricing = () => {
                         <h3 className="text-2xl font-bold text-white">Yearly</h3>
                         <p className="mt-2 text-[#a4f16c]">Save over 20%!</p>
                         <p className="mt-6 text-5xl font-extrabold text-white">
-                            $144 <span className="text-lg font-medium text-slate-400">/ year</span>
+                            ₹1440 <span className="text-lg font-medium text-slate-400">/ year</span>
                         </p>
                         <ul className="mt-8 space-y-4 text-slate-300">
                             <li><Checkmark /> Unlimited AI-Generated Workouts</li>

@@ -10,6 +10,7 @@ import FAQ from './landing/FAQ';
 import CTA from './landing/CTA';
 import Footer from './landing/Footer';
 import Contact from './landing/Contact';
+import FloatingNav from './landing/FloatingNav'; // Import the new component
 
 const LandingPage = () => {
   // Function to handle smooth scrolling
@@ -42,6 +43,9 @@ const LandingPage = () => {
       </main>
       {/* Pass scroll handler to Footer */}
       <Footer handleScroll={handleScroll} />
+
+      {/* Add the FloatingNav here */}
+      <FloatingNav handleScroll={handleScroll} />
     </div>
   );
 };
